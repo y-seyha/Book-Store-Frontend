@@ -22,3 +22,27 @@ export type socialProvider = {
     icon: React.ComponentType<any>;
     key: "google" | "github" | "facebook";
 };
+
+export type Product = {
+    id: number | string;
+    name: string;
+    description: string;
+    price: string;
+    stock: number;
+    category?: { id: number; name: string };
+    image_url?: string;
+    images?: string[];
+    user?: { first_name: string; last_name: string; email: string };
+};
+
+
+export interface ConfirmModalProps {
+    isOpen: boolean;
+    title?: string;
+    description?: string;
+    confirmText?: string;
+    cancelText?: string;
+    onCancel: () => void;
+    onConfirm: () => void;
+    loading?: boolean;
+}
