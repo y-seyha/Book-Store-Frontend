@@ -26,7 +26,7 @@ export const userSchema = z
         email: z.string().email(),
         firstName: z.string().optional(),
         lastName: z.string().optional(),
-        role: z.enum(["customer", "admin"]).optional(),
+        role: z.enum(["customer", "admin", "seller"]).optional(),
         phone: z.string().nullable().optional(),
         avatar: z.string().nullable().optional(),
         is_verified: z.boolean().optional(),

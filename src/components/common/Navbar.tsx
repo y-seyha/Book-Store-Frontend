@@ -171,6 +171,25 @@ export default function Navbar() {
                                         <DropdownMenuItem asChild>
                                             <Link href="/profile">My Profile</Link>
                                         </DropdownMenuItem>
+
+                                        {user?.role === "seller" && (
+                                            <DropdownMenuItem asChild>
+                                                <Link href="/seller/dashboard">My Dashboard</Link>
+                                            </DropdownMenuItem>
+                                        )}
+
+                                        {user?.role === "admin" && (
+                                            <DropdownMenuItem asChild>
+                                                <Link href="/admin/dashboard">Admin Dashboard</Link>
+                                            </DropdownMenuItem>
+                                        )}
+
+                                        {user?.role === "customer" && (
+                                            <DropdownMenuItem asChild>
+                                                <Link href="/become-seller">Become a Seller</Link>
+                                            </DropdownMenuItem>
+                                        )}
+
                                         <DropdownMenuItem asChild>
                                             <Link href="/orders">Orders</Link>
                                         </DropdownMenuItem>
@@ -271,68 +290,6 @@ export default function Navbar() {
                         )
                     )}
 
-                    {/* Cart mobile */}
-                    {/*<Link href="/cart" className="relative block mt-2">*/}
-                    {/*    <Button*/}
-                    {/*        variant="ghost"*/}
-                    {/*        size="icon"*/}
-                    {/*        className="w-full justify-start"*/}
-                    {/*    >*/}
-                    {/*        <ShoppingCart className="w-5 h-5 mr-2" />*/}
-                    {/*        Cart*/}
-                    {/*    </Button>*/}
-                    {/*    {cart && cart.length > 0 && (*/}
-                    {/*        <span className="absolute -top-1 -right-1 px-2 py-1 text-xs font-bold text-white bg-red-600 rounded-full">*/}
-                    {/*            {cart.length}*/}
-                    {/*        </span>*/}
-                    {/*    )}*/}
-                    {/*</Link>*/}
-
-                    {/*{user ? (*/}
-                    {/*    <div className="flex flex-col gap-2 mt-2">*/}
-                    {/*        /!*<Button variant="ghost" size="icon">*!/*/}
-                    {/*        /!*    <Bell className="h-5 w-5" />*!/*/}
-                    {/*        /!*</Button>*!/*/}
-
-                    {/*        /!*<DropdownMenu>*!/*/}
-                    {/*        /!*    <DropdownMenuTrigger asChild className='mb-2'>*!/*/}
-                    {/*        /!*        <Button variant="outline">Profile</Button>*!/*/}
-                    {/*        /!*    </DropdownMenuTrigger>*!/*/}
-
-                    {/*        /!*    <DropdownMenuContent align="end">*!/*/}
-                    {/*        /!*        <DropdownMenuItem asChild>*!/*/}
-                    {/*        /!*            <Link href="/profile">*!/*/}
-                    {/*        /!*                My Profile*!/*/}
-                    {/*        /!*            </Link>*!/*/}
-                    {/*        /!*        </DropdownMenuItem>*!/*/}
-                    {/*        /!*        <DropdownMenuItem asChild>*!/*/}
-                    {/*        /!*            <Link href="/orders">Orders</Link>*!/*/}
-                    {/*        /!*        </DropdownMenuItem>*!/*/}
-                    {/*        /!*        <DropdownMenuItem onClick={logout}>*!/*/}
-                    {/*        /!*            Logout*!/*/}
-                    {/*        /!*        </DropdownMenuItem>*!/*/}
-                    {/*        /!*    </DropdownMenuContent>*!/*/}
-                    {/*        /!*</DropdownMenu>*!/*/}
-                    {/*    </div>*/}
-                    {/*) : (*/}
-                    {/*    <div className="flex flex-col gap-2 mt-2 cursor-pointer">*/}
-                    {/*        <Button className='border border-gray-50'*/}
-                    {/*            variant="ghost"*/}
-                    {/*            onClick={() =>*/}
-                    {/*                (window.location.href = "/auth/signup")*/}
-                    {/*            }*/}
-                    {/*        >*/}
-                    {/*            Register*/}
-                    {/*        </Button>*/}
-                    {/*        <Button className='mb-2'*/}
-                    {/*            onClick={() =>*/}
-                    {/*                (window.location.href = "/auth/signin")*/}
-                    {/*            }*/}
-                    {/*        >*/}
-                    {/*            Login*/}
-                    {/*        </Button>*/}
-                    {/*    </div>*/}
-                    {/*)}*/}
                 </div>
             )}
         </nav>

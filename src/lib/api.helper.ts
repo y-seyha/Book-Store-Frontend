@@ -66,3 +66,12 @@ export async function apiDelete<TResponse>(
     const response = await client.delete<TResponse>(url, config);
     return response.data;
 }
+export async function apiPut<TBody, TResponse>(
+    client: AxiosInstance,
+    url: string,
+    body?: TBody,
+    config?: AxiosRequestConfig
+): Promise<TResponse> {
+    const response = await client.put<TResponse>(url, body, config);
+    return response.data;
+}

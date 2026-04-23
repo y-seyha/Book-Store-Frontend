@@ -80,10 +80,10 @@ export default function HomePage() {
 
     return (
         <MainLayout>
-            <section>
-                <h1 className="text-3xl font-bold text-center mb-6">
-                    Welcome to Our Bookstore
-                </h1>
+            <section className='mt-20'>
+                {/*<h1 className="text-3xl font-bold text-center mb-6">*/}
+                {/*    Welcome to Our Bookstore*/}
+                {/*</h1>*/}
                 <BookstoreCarousel images={images} />
             </section>
 
