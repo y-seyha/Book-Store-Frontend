@@ -1,18 +1,32 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { jwtVerify } from "jose";
 
-export function middleware(request: NextRequest) {
-    const token = request.cookies.get("token")?.value;
-    console.log(token, "token");
+const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
+
+export async function middleware(request: NextRequest) {
+    const token = request.cookies.get("access_token")?.value;
+    const pathname = request.nextUrl.pathname;
+
+    console.log("🔥 MIDDLEWARE HIT:", request.nextUrl.pathname);
 
     if (!token) {
         return NextResponse.redirect(new URL("/auth/signin", request.url));
     }
-    console.log("MIDDLEWARE RUNNING");
 
-    return NextResponse.next();
+    try {
+        const { payload } = await jwtVerify(token, secret);
+
+        if (pathname.startsWith("/admin") && payload.role !== "admin") {
+            return NextResponse.redirect(new URL("/", request.url));
+        }
+
+        return NextResponse.next();
+    } catch {
+        return NextResponse.redirect(new URL("/auth/signin", request.url));
+    }
 }
 
 export const config = {
-    matcher: ["/profile/:path*",    "/cart","/cart/:path*", "/orders/:path*"],
+    matcher: ["/admin/:path*", "/profile/:path*", "/cart/:path*", "/orders/:path*"],
 };

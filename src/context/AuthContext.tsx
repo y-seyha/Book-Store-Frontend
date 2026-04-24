@@ -87,15 +87,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const refreshUser = async () => {
         try {
             const res = await apiGet<{ user: unknown }>(client, "/auth/me");
-            console.log("API /auth/me response:", res);
+            // console.log("API /auth/me response:", res);
 
-            console.log("API /auth/me raw:", res);
+            // console.log("API /auth/me raw:", res);
 
             // Use the schema to parse and transform the API response
             const parsedUser = userSchema.parse(res.user);
 
             setUser(parsedUser);
-            console.log("Parsed user:", parsedUser);
+            // console.log("Parsed user:", parsedUser);
         } catch (err) {
             console.error("refreshUser error:", err);
             setUser(null);

@@ -40,7 +40,7 @@ export async function apiPost<TBody, TResponse>(
     body?: TBody,
     config?: AxiosRequestConfig
 ): Promise<TResponse> {
-    console.log("POST request to:", url, "with body:", body);
+    // console.log("POST request to:", url, "with body:", body);
     const response = await client.post<TResponse>(url, body, config);
     return response.data;
 }
@@ -62,7 +62,7 @@ export async function apiDelete<TResponse>(
     url: string,
     config?: AxiosRequestConfig
 ): Promise<TResponse> {
-    console.log("DELETE request to:", url);
+    // console.log("DELETE request to:", url);
     const response = await client.delete<TResponse>(url, config);
     return response.data;
 }
