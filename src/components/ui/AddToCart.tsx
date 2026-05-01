@@ -39,7 +39,7 @@ export default function AddToCart({ stock, productId }: AddToCartProps) {
         setQuantity(1);
         setTimeout(() => setJustAdded(false), 2000);
 
-        console.log("Added to cart:", productId, quantity);
+        // console.log("Added to cart:", productId, quantity);
     };
 
     const handleWishlist = () => {

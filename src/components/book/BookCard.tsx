@@ -101,7 +101,9 @@ export default function BookCard({ products, onAddToCart }: ProductCarouselProps
     };
 
     const handleQrCodeClick = async (product: Product) => {
-        const url = `${window.location.origin}/products/${product.id}`;
+        const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
+
+        const url = `${baseUrl}/products/${product.id}`;
         const qr = await generateQrCode(url);
 
         setQrImage(qr);

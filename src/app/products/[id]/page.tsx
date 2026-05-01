@@ -62,7 +62,7 @@ export default function BookDetailsPage() {
             <div className="mt-30  max-w-7xl mx-auto p-4 lg:p-8 flex flex-col gap-12">
 
                 {/* Top Section: Book Details */}
-                <div className="border rounded-lg p-6 flex flex-col md:flex-row gap-8 bg-white dark:bg-gray-900 shadow-sm">
+                <div className="border rounded-lg p-6 flex flex-col md:flex-row gap-8 bg-white dark:bg-black shadow-sm">
 
                     {/* Image Carousel */}
                     <div className="flex-1 w-full md:w-1/2 relative">
