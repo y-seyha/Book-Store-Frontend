@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/hooks/useCart";
+import {toast} from "sonner";
+import {useRouter} from "next/navigation";
 
 interface AddToCartProps {
     stock: number;
@@ -10,6 +12,7 @@ interface AddToCartProps {
 }
 
 export default function AddToCart({ stock, productId }: AddToCartProps) {
+    const router = useRouter();
     const [quantity, setQuantity] = useState(1);
     const [added, setAdded] = useState(0);
     const [justAdded, setJustAdded] = useState(false);
@@ -28,33 +31,61 @@ export default function AddToCart({ stock, productId }: AddToCartProps) {
 
     const increment = () => setQuantity((q) => Math.min(q + 1, stock - added));
     const decrement = () => setQuantity((q) => Math.max(q - 1, 1));
+    
 
     const handleAddToCart = async () => {
-        if (!productId || quantity <= 0 || isOutOfStock) return;
+        if (!productId || quantity <= 0 || isOutOfStock) {
+            toast.error("Cannot add to cart", {
+                description: "Invalid quantity or product is out of stock.",
+            });
+            return;
+        }
 
-        await addToCart(productId, quantity);
-        setAdded((prev) => prev + quantity);
-        setLastAddedQuantity(quantity);
-        setJustAdded(true);
-        setQuantity(1);
-        setTimeout(() => setJustAdded(false), 2000);
+        try {
+            await addToCart(productId, quantity);
 
-        // console.log("Added to cart:", productId, quantity);
+            setAdded((prev) => prev + quantity);
+            setLastAddedQuantity(quantity);
+            setJustAdded(true);
+            setQuantity(1);
+
+            toast.success(`Added (${quantity}) to cart successfully 🛒`);
+
+            setTimeout(() => setJustAdded(false), 2000);
+        } catch (error: any) {
+            toast.error("Failed to add to cart", {
+                description: error?.message || "Something went wrong",
+            });
+        }
     };
 
     const handleWishlist = () => {
         if (!productId) return;
 
-        const wishlist: number[] = JSON.parse(localStorage.getItem("wishlist") || "[]");
+        const wishlist: number[] = JSON.parse(
+            localStorage.getItem("favorites") || "[]"
+        );
 
         if (!wishlist.includes(productId)) {
             wishlist.push(productId);
-            localStorage.setItem("wishlist", JSON.stringify(wishlist));
-            alert("Added to Wishlist ❤️");
+            localStorage.setItem("favorites", JSON.stringify(wishlist));
+
+            toast.success("Added to wishlist ❤️", {
+                action: {
+                    label: "Go to wishlist",
+                    onClick: () => router.push("/wishlist"),
+                },
+            });
         } else {
-            alert("Already in Wishlist");
+            toast.info("Already in wishlist", {
+                action: {
+                    label: "View wishlist",
+                    onClick: () => router.push("/wishlist"),
+                },
+            });
         }
     };
+
 
     return (
         <div className="flex flex-col md:flex-row items-start md:items-center gap-4 w-full">
