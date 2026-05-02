@@ -26,7 +26,6 @@ import {
 
 const client = createBrowserApiClient();
 
-// ---------------- TYPES ----------------
 type DashboardData = {
     totalSales: number;
     totalOrders: number;

@@ -10,37 +10,42 @@ import {
     LayoutDashboard,
     ShoppingBag,
     Tags,
-    Users,
-    UserCheck,
-    Truck,
-    MapPin,
-    CreditCard,
-    Star,
     LogOut,
     Menu,
     X,
 } from "lucide-react";
 
 const menu = [
-    { label: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
-    { label: "Products", href: "/admin/product-dashboard", icon: ShoppingBag },
-    { label: "Categories", href: "/admin/categories-dashboard", icon: Tags },
-    { label: "Users", href: "/admin/users-dashboard", icon: Users },
-    { label: "Sellers", href: "/admin/sellers-dashboard", icon: UserCheck },
-    { label: "Drivers", href: "/admin/driver-dashboard", icon: Truck },
-    { label: "Delivery Track", href: "/admin/delivery-track-dashboard", icon: MapPin },
-    { label: "Payments", href: "/admin/payment-dashboard", icon: CreditCard },
-    { label: "Reviews", href: "/admin/review-dashboard", icon: Star },
+    {
+        label: "Dashboard",
+        href: "/seller/dashboard",
+        icon: LayoutDashboard,
+    },
+    {
+        label: "My Products",
+        href: "/seller/product-dashboard",
+        icon: ShoppingBag,
+    },
+    {
+        label: "Categories",
+        href: "/seller/categories-dashboard",
+        icon: Tags,
+    },
 ];
 
-export default function AdminSidebar() {
+export default function SellerSidebar() {
     const pathname = usePathname();
     const { logout } = useAuth();
 
     const [open, setOpen] = useState(false);
 
+    // Prevent background scroll when sidebar is open (mobile)
     useEffect(() => {
-        document.body.style.overflow = open ? "hidden" : "auto";
+        if (open) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "auto";
+        }
     }, [open]);
 
     return (
@@ -50,7 +55,10 @@ export default function AdminSidebar() {
                 <button onClick={() => setOpen(true)}>
                     <Menu size={22} />
                 </button>
-                <span className="font-semibold">Admin Panel</span>
+
+                <span className="font-semibold">
+                    Seller Panel
+                </span>
             </div>
 
             {/* OVERLAY */}
@@ -64,16 +72,24 @@ export default function AdminSidebar() {
             {/* SIDEBAR */}
             <aside
                 className={`
-                            fixed md:static top-0 left-0 z-50 h-screen w-64 flex flex-col justify-between border-r bg-white dark:bg-gray-950 text-gray-700 dark:text-gray-200
-                            transform transition-transform duration-300 ease-in-out
-                            ${open ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}
+fixed md:static top-0 left-0 z-50
+h-screen w-64 flex flex-col justify-between
+border-r
+bg-white dark:bg-gray-950
+text-gray-700 dark:text-gray-200
+
+transform transition-transform duration-300 ease-in-out
+
+${open ? "translate-x-0" : "-translate-x-full"}
+md:translate-x-0
+    `}
             >
                 {/* TOP */}
                 <div>
                     {/* HEADER */}
                     <div className="px-6 py-5 font-bold text-lg border-b border-gray-200 dark:border-gray-800 flex justify-between items-center">
                         <span className="tracking-wide">
-                            ADMIN PANEL
+                            SELLER PANEL
                         </span>
 
                         {/* CLOSE BUTTON (mobile) */}
@@ -96,7 +112,11 @@ export default function AdminSidebar() {
                                     key={item.href}
                                     href={item.href}
                                     onClick={() => setOpen(false)}
-                                    className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-all duration-200
+                                    className={`
+flex items-center gap-3
+px-3 py-2.5 rounded-md
+text-sm font-medium
+transition-all duration-200
 
 ${
     isActive
@@ -116,6 +136,7 @@ ${
 
                                     <span>{item.label}</span>
 
+                                    {/* active dot */}
                                     {isActive && (
                                         <span className="ml-auto w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-400" />
                                     )}
@@ -146,4 +167,3 @@ ${
         </>
     );
 }
-
