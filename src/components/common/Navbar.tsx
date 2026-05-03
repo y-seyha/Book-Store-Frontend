@@ -1,13 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import {
     Bell,
     Menu,
     X,
     ShoppingCart,
-    ChevronDown,
+    ChevronDown, Package, Truck, CheckCheck,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -22,6 +22,8 @@ import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/hooks/useCart";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
+import {ScrollArea} from "@/components/ui/scroll-area";
+import {useNotifications} from "@/context/NotificationContext";
 
 type NavItem = {
     label: string;
@@ -48,14 +50,31 @@ const navItems: NavItem[] = [
 export default function Navbar() {
     const { cart } = useCart();
     const { user, logout, loading } = useAuth();
+    const {
+        notifications,
+        unreadCount,
+        markAllAsRead,
+        markAsRead,
+        refresh,
+    } = useNotifications();
     const pathname = usePathname();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [open, setOpen] = useState(false);
 
 
     const isActive = (href: string) => pathname === href;
     const isCategoryActive = pathname.startsWith("/products/category");
 
+
+    useEffect(() => {
+        if (user) {
+            refresh();
+        }
+    }, [user, refresh]);
+
     if (loading) return null;
+
+
 
     return (
         <nav className="fixed top-4 left-0 w-full z-50">
@@ -68,8 +87,8 @@ export default function Navbar() {
                             <Image
                                 src="/logoBook.png"
                                 alt="Logo"
-                                width={60}  // adjust size as needed
-                                height={60} // adjust size as needed
+                                width={60}
+                                height={60}
                             />
                         </Link>
 
@@ -149,9 +168,104 @@ export default function Navbar() {
 
                         {user ? (
                             <>
-                                <Button variant="ghost" size="icon">
-                                    <Bell className="h-5 w-5" />
-                                </Button>
+                                <DropdownMenu
+                                    open={open}
+                                    onOpenChange={setOpen}
+                                >
+                                    <DropdownMenuTrigger asChild>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="relative"
+                                            onClick={refresh}
+                                        >
+                                            <Bell className="h-5 w-5" />
+
+                                            {unreadCount > 0 && (
+                                                <span className="absolute -top-1 -right-1 flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-[10px] font-semibold bg-red-500 text-white animate-pulse">
+            {unreadCount > 99 ? "99+" : unreadCount}
+        </span>
+                                            )}
+                                        </Button>
+                                    </DropdownMenuTrigger>
+
+                                    <DropdownMenuContent
+                                        align="end"
+                                        className="w-80 p-0 overflow-hidden rounded-xl border shadow-lg"
+                                    >
+                                        {/* HEADER */}
+                                        <div className="flex items-center justify-between px-4 py-3 border-b bg-gray-50 dark:bg-gray-900">
+                                            <div className="flex items-center gap-2">
+                                                <p className="text-sm font-semibold">Notifications</p>
+                                                {unreadCount > 0 && (
+                                                    <span className="text-xs text-red-500 font-medium">
+                        {unreadCount} new
+                    </span>
+                                                )}
+                                            </div>
+
+                                            {/* MARK ALL READ */}
+                                            {unreadCount > 0 && (
+                                                <Button
+                                                    size="sm"
+                                                    variant="ghost"
+                                                    onClick={markAllAsRead}
+                                                >
+                                                    <CheckCheck className="w-3 h-3 mr-1" />
+                                                    Mark all
+                                                </Button>
+                                            )}
+                                        </div>
+
+                                        {/* BODY */}
+                                        <ScrollArea className="h-72">
+                                            {notifications.length === 0 ? (
+                                                <div className="p-6 text-sm text-center text-gray-500">
+                                                    No notifications yet
+                                                </div>
+                                            ) : (
+                                                <div className="flex flex-col">
+                                                    {notifications.map((n) => (
+                                                        <Link
+                                                            key={n.id}
+                                                            href="#"
+                                                            onClick={() => markAsRead(n.id)}
+                                                            className={`flex gap-3 px-4 py-3 transition ${
+                                                                !n.read ? "bg-blue-50 dark:bg-blue-950/20" : ""
+                                                            }`}
+                                                        >
+                                                            {/* ICON */}
+                                                            <div className="mt-0.5">
+                                                                {n.type === "order" ? (
+                                                                    <Package className="w-4 h-4 text-blue-500" />
+                                                                ) : (
+                                                                    <Truck className="w-4 h-4 text-green-500" />
+                                                                )}
+                                                            </div>
+
+                                                            {/* CONTENT */}
+                                                            <div className="flex-1">
+                                                                <p className="text-sm leading-snug">
+                                                                    {n.message}
+                                                                </p>
+
+                                                                <div className="flex items-center justify-between mt-1">
+                                                                    <p className="text-xs text-gray-400">
+                                                                        {new Date(n.time).toLocaleTimeString()}
+                                                                    </p>
+
+                                                                    {!n.read && (
+                                                                        <span className="w-2 h-2 rounded-full bg-blue-500" />
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                        </Link>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </ScrollArea>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
 
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>

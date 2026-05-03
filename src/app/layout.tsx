@@ -2,10 +2,7 @@ import type { Metadata } from "next";
 import { Roboto, Roboto_Mono} from "next/font/google";
 import "./globals.css";
 import {ThemeProvider} from "@/components/theme-provider";
-import {AuthProvider} from "@/context/AuthContext";
-import {Toaster} from "@/components/ui/sonner";
-import {TooltipProvider} from "@/components/ui/tooltip";
-import {CartProvider} from "@/context/CartContext";
+import AppProviders from "@/components/providers/AppProviders";
 
 
 const roboto = Roboto({
@@ -26,19 +23,13 @@ export const metadata: Metadata = {
     description: "Your wishlist online bookstore",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  return (
-      <>
-          <html
-              lang="en"
-              className={`${roboto.variable} ${robotoMono.variable}`}
-              suppressHydrationWarning
-          >
-        <head />
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+    return (
+        <html
+            lang="en"
+            className={`${roboto.variable} ${robotoMono.variable}`}
+            suppressHydrationWarning
+        >
         <body>
         <ThemeProvider
             attribute="class"
@@ -46,18 +37,11 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
         >
-
-           <TooltipProvider>
-               <AuthProvider>
-                   <CartProvider>
-                   {children}
-                   <Toaster    position="bottom-right" />
-                   </CartProvider>
-               </AuthProvider>
-           </TooltipProvider>
+            <AppProviders>
+                {children}
+            </AppProviders>
         </ThemeProvider>
         </body>
         </html>
-      </>
-  );
+    );
 }

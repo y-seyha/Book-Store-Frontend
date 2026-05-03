@@ -16,7 +16,7 @@ import AppModal from "@/components/common/admin/Modal";
 import DataTable from "@/components/common/admin/DataTable";
 import RowDropdown from "@/components/common/admin/RowDropdown";
 import { toast } from "sonner";
-import SellerMainLayout from "@/components/layout/SellerLayout";
+import AdminMainLayout from "@/components/layout/AdminMainLayout";
 
 const client = createBrowserApiClient();
 
@@ -171,7 +171,7 @@ export default function CategoriesDashboard() {
     ];
 
     return (
-        <SellerMainLayout>
+        <AdminMainLayout>
             <div className="p-6 space-y-4">
 
                 {/* HEADER */}
@@ -280,6 +280,6 @@ export default function CategoriesDashboard() {
                     </div>
                 </AppModal>
             </div>
-        </SellerMainLayout>
+        </AdminMainLayout>
     );
 }
