@@ -6,15 +6,19 @@ import OrderHeader from "./OrderHeader";
 import OrderItems from "./OrderItems";
 import OrderShipping from "./OrderShipping";
 import {DollarSign} from "lucide-react";
-import {toast} from "sonner";
+import {useRouter} from "next/navigation";
+import {Order} from "@/types";
 
-export default function OrderCard({ order }: { order: any }) {
+export default function OrderCard({ order }: { order: Order }) {
+    const router = useRouter();
     const [open, setOpen] = useState(false);
 
 
-    const handleClick = () => {
-        toast.dismiss(); // remove previous toasts
-        toast.error('This feature will comming soon');
+
+    const handleClick = (e: React.MouseEvent) => {
+        e.stopPropagation(); // prevents card toggle
+
+        router.push(`/orders/${order.id}/tracking`);
     };
 
     return (
@@ -50,7 +54,7 @@ export default function OrderCard({ order }: { order: any }) {
         Total: ${order.total_price}
       </span>
 
-                            <button className="text-blue-600 dark:text-blue-400 hover:underline font-medium transition-colors"
+                            <button className="text-blue-600 dark:text-blue-400 hover:underline font-medium transition-colors cursor-pointer"
                             onClick={handleClick}>
                                 View Details
                             </button>

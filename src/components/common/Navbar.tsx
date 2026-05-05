@@ -20,7 +20,7 @@ import {
 import { ModeToggle } from "@/components/common/ModeToggle";
 import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/hooks/useCart";
-import { usePathname } from "next/navigation";
+import {usePathname, useRouter} from "next/navigation";
 import Image from "next/image";
 import {ScrollArea} from "@/components/ui/scroll-area";
 import {useNotifications} from "@/context/NotificationContext";
@@ -48,6 +48,7 @@ const navItems: NavItem[] = [
 ];
 
 export default function Navbar() {
+    const router = useRouter();
     const { cart } = useCart();
     const { user, logout, loading } = useAuth();
     const {
@@ -224,12 +225,14 @@ export default function Navbar() {
                                                     No notifications yet
                                                 </div>
                                             ) : (
-                                                <div className="flex flex-col">
+                                                <div className="flex flex-col cursor-pointer">
                                                     {notifications.map((n) => (
-                                                        <Link
+                                                        <div
                                                             key={n.id}
-                                                            href="#"
-                                                            onClick={() => markAsRead(n.id)}
+                                                            onClick={() => {
+                                                                markAsRead(n.id);
+                                                                router.push("/orders");
+                                                            }}
                                                             className={`flex gap-3 px-4 py-3 transition ${
                                                                 !n.read ? "bg-blue-50 dark:bg-blue-950/20" : ""
                                                             }`}
@@ -259,7 +262,7 @@ export default function Navbar() {
                                                                     )}
                                                                 </div>
                                                             </div>
-                                                        </Link>
+                                                        </div>
                                                     ))}
                                                 </div>
                                             )}

@@ -157,11 +157,16 @@ export default function NotificationProvider({
             handle(d, "delivery")
         );
 
+        socket.on("order_cancelled", (d) =>
+            handle(d, "order")
+        );
+
         return () => {
             socket.off("order_created");
             socket.off("new_delivery");
             socket.off("delivery_success");
             socket.off("delivery_failed");
+            socket.off("order_cancelled");
         };
     }, [userId, addNotification]);
 

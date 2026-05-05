@@ -46,3 +46,66 @@ export interface ConfirmModalProps {
     onConfirm: () => void;
     loading?: boolean;
 }
+
+export type DeliveryStatus =
+    | "preparing"
+    | "picked_up"
+    | "on_the_way"
+    | "delivered"
+    | "cancelled";
+
+export type Payment = {
+    id: number;
+    status: "pending" | "success" | "failed";
+    method: "cod" | "aba" | "card" | string;
+    paid_at?: string;
+};
+
+export type DriverProfile = {
+    vehicle_type: string;
+    plate_number?: string;
+    user: {
+        first_name: string;
+        last_name: string;
+        phone: string;
+    };
+};
+
+export type DeliveryTracking = {
+    id: number;
+    status: DeliveryStatus;
+    driverProfile?: DriverProfile;
+};
+
+export type OrderStatus =
+    | "pending"
+    | "paid"
+    | "shipped"
+    | "completed"
+    | "cancelled";
+
+export type Order = {
+    id: number;
+    status: OrderStatus;
+    total_price: number;
+
+    created_at: string;
+    updated_at?: string;
+
+    shipping_name?: string;
+    shipping_phone?: string;
+    shipping_address?: string;
+    shipping_city?: string;
+
+    payments?: Payment[];
+    tracking?: DeliveryTracking;
+
+    items: {
+        id: number;
+        quantity: number;
+        product: {
+            name: string;
+            price: number;
+        };
+    }[];
+};

@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
-import {toast} from "sonner";
-
+import { toast } from "sonner";
+import { useAuth } from "@/context/AuthContext";
 
 export interface ShippingData {
     shipping_name: string;
@@ -18,6 +18,8 @@ interface Props {
 }
 
 export default function ShippingForm({ onSubmit }: Props) {
+    const { user } = useAuth();
+
     const [form, setForm] = useState<ShippingData>({
         shipping_name: "",
         shipping_phone: "",
@@ -31,7 +33,6 @@ export default function ShippingForm({ onSubmit }: Props) {
     };
 
     const handleSubmit = () => {
-        // simple validation
         if (
             !form.shipping_name ||
             !form.shipping_phone ||
@@ -42,8 +43,24 @@ export default function ShippingForm({ onSubmit }: Props) {
             return;
         }
 
-        onSubmit(form); // 🔥 send ONLY when user clicks
+        onSubmit(form);
     };
+
+    useEffect(() => {
+        if (!user) return;
+
+        setForm((prev) => {
+            const isEmpty = !prev.shipping_name && !prev.shipping_phone;
+
+            if (!isEmpty) return prev; // don't override user input
+
+            return {
+                ...prev,
+                shipping_name: `${user.firstName} ${user.lastName}`,
+                shipping_phone: user.phone ?? "",
+            };
+        });
+    }, [user]);
 
     return (
         <div className="border rounded-lg p-6 space-y-4 flex-1">
@@ -74,10 +91,10 @@ export default function ShippingForm({ onSubmit }: Props) {
             />
 
             <select
-                className="w-full border rounded-md p-2 dark:bg-[#121212] "
+                className="w-full border rounded-md p-2 dark:bg-[#121212]"
                 value={form.payment_method}
                 onChange={(e) =>
-                    handleChange("payment_method", e.target.value)
+                    handleChange("payment_method", e.target.value as "cod" | "aba")
                 }
             >
                 <option value="cod">Cash on Delivery</option>
