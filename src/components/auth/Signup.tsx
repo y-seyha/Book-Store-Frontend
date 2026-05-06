@@ -15,6 +15,8 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
+import {registerInputSchema} from "@/types/schema";
+import {z} from 'zod';
 
 export default function SignupForm() {
     const { register } = useAuth();
@@ -31,36 +33,46 @@ export default function SignupForm() {
 
         try {
             const data = {
-                email,
+                email: email.trim().toLowerCase(),
                 password,
-                firstName,
-                lastName,
+                firstName: firstName.trim(),
+                lastName: lastName.trim(),
             };
 
-            console.log("Register request payload:", data);
-            await register(data);
+            registerInputSchema.parse(data);
+
+            const user = await register(data);
 
             toast.success("Account created!", {
-                description: `Welcome, ${firstName}! You can now log in.`,
-                action: {
-                    label: "Continue",
-                    onClick: () => console.log("User clicked Continue"),
-                },
+                description: `Welcome ${user.firstName} ${user.lastName}!`,
             });
 
-            // Optionally reset form
             setFirstName("");
             setLastName("");
             setEmail("");
             setPassword("");
-        } catch (err: any) {
-            toast.error("Signup failed", {
-                description: err?.message || "Please check your inputs and try again.",
-                action: {
-                    label: "Retry",
-                    onClick: () => console.log("Retry signup"),
-                },
-            });
+        }catch (err: any) {
+            console.error("Signup error:", err);
+
+            if (err instanceof z.ZodError) {
+                toast.error(err.issues[0].message);
+                return;
+            }
+
+            const message =
+                err?.response?.data?.message ||
+                err?.response?.data?.error ||
+                err?.message;
+
+            if (message?.toLowerCase().includes("email")) {
+                toast.error("Email already exists", {
+                    description: "Try logging in instead.",
+                });
+                return;
+            }
+
+            toast.error(message || "Signup failed");
+
         } finally {
             setLoading(false);
         }
@@ -77,10 +89,13 @@ export default function SignupForm() {
 
             <CardContent className="flex flex-col gap-4">
                 <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+                    {/* First Name */}
                     <div className="flex flex-col gap-2">
-                        <Label>First Name</Label>
+                        <Label htmlFor="firstName">First Name</Label>
                         <Input
+                            id="firstName"
                             type="text"
+                            autoComplete="given-name"
                             value={firstName}
                             onChange={(e) => setFirstName(e.target.value)}
                             placeholder="Enter your first name"
@@ -88,10 +103,13 @@ export default function SignupForm() {
                         />
                     </div>
 
+                    {/* Last Name */}
                     <div className="flex flex-col gap-2">
-                        <Label>Last Name</Label>
+                        <Label htmlFor="lastName">Last Name</Label>
                         <Input
+                            id="lastName"
                             type="text"
+                            autoComplete="family-name"
                             value={lastName}
                             onChange={(e) => setLastName(e.target.value)}
                             placeholder="Enter your last name"
@@ -99,10 +117,13 @@ export default function SignupForm() {
                         />
                     </div>
 
+                    {/* Email */}
                     <div className="flex flex-col gap-2">
-                        <Label>Email</Label>
+                        <Label htmlFor="email">Email</Label>
                         <Input
+                            id="email"
                             type="email"
+                            autoComplete="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             placeholder="Enter your email"
@@ -110,33 +131,43 @@ export default function SignupForm() {
                         />
                     </div>
 
+                    {/* Password */}
                     <div className="flex flex-col gap-2">
-                        <Label>Password</Label>
+                        <Label htmlFor="password">Password</Label>
 
                         <div className="relative">
                             <Input
+                                id="password"
                                 type={showPassword ? "text" : "password"}
+                                autoComplete="new-password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                placeholder="Enter your password"
+                                placeholder="Create a password"
                                 className="pr-10"
                                 required
                             />
 
                             <button
                                 type="button"
+                                aria-label="Toggle password visibility"
                                 onClick={() => setShowPassword((prev) => !prev)}
-                                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
                             >
                                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                             </button>
                         </div>
                     </div>
 
-                    <Button type="submit" className="w-full" disabled={loading}>
+                    {/* Submit */}
+                    <Button
+                        type="submit"
+                        className="w-full"
+                        disabled={loading || !email || !password || !firstName || !lastName}
+                    >
                         {loading ? "Creating account..." : "Sign Up"}
                     </Button>
 
+                    {/* Redirect */}
                     <div className="text-center text-sm text-muted-foreground mt-2">
                         Already have an account?{" "}
                         <Link href="/auth/signin" className="text-blue-600 hover:underline">

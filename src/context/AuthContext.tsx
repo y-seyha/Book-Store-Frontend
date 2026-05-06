@@ -22,8 +22,8 @@ import {API_BASE_URL} from "@/lib/constant";
 type AuthContextType = {
     user: User | null;
     loading: boolean;
-    login: (data: LoginInput) => Promise<void>;
-    register: (data: RegisterInput) => Promise<void>;
+    login: (data: LoginInput) => Promise<User>;
+    register: (data: RegisterInput) => Promise<User>;
     logout: () =>Promise<void>;
     refreshUser: () => Promise<void>;
     socialLogin: (provider: "google" | "github" | "facebook") => Promise<void>;
@@ -38,20 +38,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const params = new URLSearchParams(window.location.search);
-        const login = params.get("login");
-
-        if (login === "success") {
-            toast.success("Login successful 🎉");
-            router.replace("/"); // clean URL
-        }
-
-        refreshUser().finally(() => setLoading(false));
-    }, []);
-
-
-    const login = async (data: LoginInput) => {
+    const login = async (data: LoginInput) : Promise<User> => {
         loginInputSchema.parse(data);
         const res = await apiPost<LoginInput, unknown>(client, "/auth/login", data);
         const parsed = loginResponseSchema.parse(res);
@@ -61,15 +48,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (pathname !== "/") {
             router.push("/");
         }
+
+        return parsed.user;
     };
 
-    const register = async (data: RegisterInput) => {
+    const register = async (data: RegisterInput): Promise<User> => {
         registerInputSchema.parse(data);
         const res = await apiPost<RegisterInput, unknown>(client, "/auth/register", data);
         const parsed = registerResponseSchema.parse(res);
         setUser(parsed.user);
 
         router.push("/");
+
+        return parsed.user;
     };
 
     const logout = async (): Promise<void> => {
@@ -106,6 +97,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         toast.loading(`Redirecting to ${provider}...`);
         window.location.href = `${API_BASE_URL}/auth/${provider}`;
     };
+
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const login = params.get("login");
+
+        if (login === "success") {
+            toast.success("Login successful 🎉");
+            router.replace("/"); // clean URL
+        }
+
+        refreshUser().finally(() => setLoading(false));
+    }, []);
 
     return (
         <AuthContext.Provider value={{ user, loading, login, register, logout, refreshUser, socialLogin }}>

@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import {toast} from "sonner";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
+import { loginInputSchema } from "@/types/schema";
 
 
 export default function LoginForm() {
@@ -26,31 +27,38 @@ export default function LoginForm() {
 
 
     const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
-        setLoading(true)
+        e.preventDefault();
+        setLoading(true);
+
+        const data = {
+            email: email.trim().toLowerCase(),
+            password,
+        };
+
+        const result = loginInputSchema.safeParse(data);
+
+        if (!result.success) {
+            toast.error(result.error.issues[0]?.message || "Invalid input");
+            setLoading(false);
+            return;
+        }
 
         try {
-            await login({ email, password })
+            const user = await login(result.data);
 
             toast.success("Login successful", {
-                description: `Welcome back, ${email}!`,
-                action: {
-                    label: "Continue",
-                    onClick: () => console.log("User clicked Continue"),
-                },
-            })
+                description: `Welcome back ${user.firstName} ${user.lastName}!`,
+            });
+
         } catch (err: any) {
             toast.error("Login failed", {
-                description: err?.message || "Check your credentials and try again.",
-                action: {
-                    label: "Retry",
-                    onClick: () => console.log("Retry login"),
-                },
-            })
+                description: "Invalid email or password",
+            });
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
-    }
+    };
+
     return (
         <Card className="w-full max-w-sm mx-auto shadow-lg space-y-5">
             <CardHeader className="text-center">
@@ -66,6 +74,7 @@ export default function LoginForm() {
                         <Label>Email</Label>
                         <Input
                             type="email"
+                            autoComplete="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             placeholder="Enter your email"
@@ -79,6 +88,7 @@ export default function LoginForm() {
                         <div className="relative">
                             <Input
                                 type={showPassword ? "text" : "password"}
+                                autoComplete="current-password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="Enter your password"
@@ -87,6 +97,7 @@ export default function LoginForm() {
 
                             <button
                                 type="button"
+                                aria-label="Toggle password visibility"
                                 onClick={() => setShowPassword((prev) => !prev)}
                                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
                             >
@@ -95,7 +106,7 @@ export default function LoginForm() {
                         </div>
                     </div>
 
-                    <Button type="submit" className="w-full" disabled={loading}>
+                    <Button type="submit" className="w-full" disabled={loading || !email || !password }>
                         {loading ? "Signing in..." : "Sign In"}
                     </Button>
 
