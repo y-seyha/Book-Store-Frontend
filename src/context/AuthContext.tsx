@@ -1,12 +1,12 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import React, {createContext, useContext, useState, useEffect, ReactNode} from "react";
 import {
     User,
     LoginInput,
     RegisterInput, LoginResponse,
 } from "@/types";
-import { z } from "zod";
+import {z} from "zod";
 import {apiGet, apiPost, createBrowserApiClient} from "@/lib/api.helper";
 import {
     loginInputSchema,
@@ -24,21 +24,21 @@ type AuthContextType = {
     loading: boolean;
     login: (data: LoginInput) => Promise<User>;
     register: (data: RegisterInput) => Promise<User>;
-    logout: () =>Promise<void>;
+    logout: () => Promise<void>;
     refreshUser: () => Promise<void>;
     socialLogin: (provider: "google" | "github" | "facebook") => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+export const AuthProvider = ({children}: { children: ReactNode }) => {
     const pathname = usePathname()
     const router = useRouter();
     const client = createBrowserApiClient();
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
 
-    const login = async (data: LoginInput) : Promise<User> => {
+    const login = async (data: LoginInput): Promise<User> => {
         loginInputSchema.parse(data);
         const res = await apiPost<LoginInput, unknown>(client, "/auth/login", data);
         const parsed = loginResponseSchema.parse(res);
@@ -58,14 +58,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const parsed = registerResponseSchema.parse(res);
         setUser(parsed.user);
 
-        router.push("/");
-
         return parsed.user;
     };
 
     const logout = async (): Promise<void> => {
         try {
-            await apiPost(client, '/auth/logout', null, { withCredentials: true });
+            await apiPost(client, '/auth/logout', null, {withCredentials: true});
             setUser(null);
             toast.success('Logout Successfully');
             window.location.href = '/auth/signin'; // force reload
@@ -111,7 +109,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }, []);
 
     return (
-        <AuthContext.Provider value={{ user, loading, login, register, logout, refreshUser, socialLogin }}>
+        <AuthContext.Provider value={{user, loading, login, register, logout, refreshUser, socialLogin}}>
             {children}
         </AuthContext.Provider>
     );

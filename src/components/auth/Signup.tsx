@@ -1,7 +1,7 @@
 "use client";
 
-import { useAuth } from "@/context/AuthContext";
-import React, { useState } from "react";
+import {useAuth} from "@/context/AuthContext";
+import React, {useState} from "react";
 import {
     Card,
     CardContent,
@@ -9,23 +9,24 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
-import { Eye, EyeOff } from "lucide-react";
+import {Label} from "@/components/ui/label";
+import {Input} from "@/components/ui/input";
+import {Button} from "@/components/ui/button";
+import {toast} from "sonner";
+import {Eye, EyeOff, Loader2} from "lucide-react";
 import Link from "next/link";
 import {registerInputSchema} from "@/types/schema";
 import {z} from 'zod';
 
 export default function SignupForm() {
-    const { register } = useAuth();
+    const {register} = useAuth();
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [step, setStep] = useState<"form" | "success">("form");
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -41,17 +42,20 @@ export default function SignupForm() {
 
             registerInputSchema.parse(data);
 
-            const user = await register(data);
+            await register(data);
 
-            toast.success("Account created!", {
-                description: `Welcome ${user.firstName} ${user.lastName}!`,
+            setStep("success");
+
+            toast.success("Account created 🎉", {
+                description: "Please check your email to verify your account.",
             });
 
             setFirstName("");
             setLastName("");
             setEmail("");
             setPassword("");
-        }catch (err: any) {
+
+        } catch (err: any) {
             console.error("Signup error:", err);
 
             if (err instanceof z.ZodError) {
@@ -61,15 +65,7 @@ export default function SignupForm() {
 
             const message =
                 err?.response?.data?.message ||
-                err?.response?.data?.error ||
                 err?.message;
-
-            if (message?.toLowerCase().includes("email")) {
-                toast.error("Email already exists", {
-                    description: "Try logging in instead.",
-                });
-                return;
-            }
 
             toast.error(message || "Signup failed");
 
@@ -77,6 +73,22 @@ export default function SignupForm() {
             setLoading(false);
         }
     };
+
+    if (step === "success") {
+        return (
+            <Card className="w-full max-w-sm mx-auto shadow-lg text-center p-6 space-y-4">
+                <CardTitle>Check your email 📩</CardTitle>
+
+                <CardDescription>
+                    We sent a verification link to <b>{email}</b>
+                </CardDescription>
+
+                <Button onClick={() => setStep("form")}>
+                    Back to signup
+                </Button>
+            </Card>
+        );
+    }
 
     return (
         <Card className="w-full max-w-sm mx-auto shadow-lg space-y-5">
@@ -153,10 +165,11 @@ export default function SignupForm() {
                                 onClick={() => setShowPassword((prev) => !prev)}
                                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
                             >
-                                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                {showPassword ? <EyeOff size={18}/> : <Eye size={18}/>}
                             </button>
                         </div>
                     </div>
+
 
                     {/* Submit */}
                     <Button
@@ -164,7 +177,14 @@ export default function SignupForm() {
                         className="w-full"
                         disabled={loading || !email || !password || !firstName || !lastName}
                     >
-                        {loading ? "Creating account..." : "Sign Up"}
+                        {loading ? (
+                            <span className="flex items-center gap-2">
+            <Loader2 className="animate-spin" size={16}/>
+            Creating account...
+        </span>
+                        ) : (
+                            "Sign Up"
+                        )}
                     </Button>
 
                     {/* Redirect */}
@@ -174,6 +194,7 @@ export default function SignupForm() {
                             Sign in
                         </Link>
                     </div>
+
                 </form>
             </CardContent>
         </Card>
