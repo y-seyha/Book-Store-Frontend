@@ -4,9 +4,8 @@ import React, {createContext, useContext, useState, useEffect, ReactNode} from "
 import {
     User,
     LoginInput,
-    RegisterInput, LoginResponse,
+    RegisterInput,
 } from "@/types";
-import {z} from "zod";
 import {apiGet, apiPost, createBrowserApiClient} from "@/lib/api.helper";
 import {
     loginInputSchema,
@@ -18,6 +17,7 @@ import {
 import {usePathname, useRouter} from "next/navigation";
 import {toast} from "sonner";
 import {API_BASE_URL} from "@/lib/constant";
+import {authEvent} from "@/lib/socket";
 
 type AuthContextType = {
     user: User | null;
@@ -34,7 +34,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({children}: { children: ReactNode }) => {
     const pathname = usePathname()
     const router = useRouter();
-    const client = createBrowserApiClient();
+    const client = React.useMemo(() => createBrowserApiClient(), []);
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -53,12 +53,23 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
     };
 
     const register = async (data: RegisterInput): Promise<User> => {
-        registerInputSchema.parse(data);
-        const res = await apiPost<RegisterInput, unknown>(client, "/auth/register", data);
-        const parsed = registerResponseSchema.parse(res);
-        setUser(parsed.user);
+        try {
+            const validData = registerInputSchema.parse(data);
+            const res = await apiPost<RegisterInput, unknown>(
+                client,
+                "/auth/register",
+                validData
+            );
 
-        return parsed.user;
+            const parsed = registerResponseSchema.parse(res);
+
+            setUser(parsed.user);
+            return parsed.user;
+
+        } catch (err) {
+            console.error("Register error:", err);
+            throw err;
+        }
     };
 
     const logout = async (): Promise<void> => {
@@ -66,30 +77,23 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
             await apiPost(client, '/auth/logout', null, {withCredentials: true});
             setUser(null);
             toast.success('Logout Successfully');
-            window.location.href = '/auth/signin'; // force reload
+            window.location.href = '/auth/signin';
         } catch (err) {
             console.error('Logout failed:', err);
             toast.error('Failed to logout');
         }
     };
 
-    const refreshUser = async () => {
+    const refreshUser = React.useCallback(async () => {
         try {
             const res = await apiGet<{ user: unknown }>(client, "/auth/me");
-            // console.log("API /auth/me response:", res);
-
-            // console.log("API /auth/me raw:", res);
-
-            // Use the schema to parse and transform the API response
             const parsedUser = userSchema.parse(res.user);
-
             setUser(parsedUser);
-            // console.log("Parsed user:", parsedUser);
         } catch (err) {
             console.error("refreshUser error:", err);
             setUser(null);
         }
-    };
+    }, [client]);
 
     const socialLogin = async (provider: "google" | "github" | "facebook") => {
         toast.loading(`Redirecting to ${provider}...`);
@@ -97,16 +101,42 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
     };
 
     useEffect(() => {
-        const params = new URLSearchParams(window.location.search);
-        const login = params.get("login");
+        let mounted = true;
 
-        if (login === "success") {
-            toast.success("Login successful 🎉");
-            router.replace("/"); // clean URL
-        }
+        const init = async () => {
+            try {
+                const params = new URLSearchParams(window.location.search);
+                const login = params.get("login");
 
-        refreshUser().finally(() => setLoading(false));
-    }, []);
+                if (login === "success") {
+                    toast.success("Login successful");
+                    router.replace("/");
+                }
+
+                await refreshUser();
+            } finally {
+                if (mounted) setLoading(false);
+            }
+        };
+
+        void init();
+
+        return () => {
+            mounted = false;
+        };
+    }, [router, refreshUser]);
+
+    useEffect(() => {
+        const handler = () => {
+            void refreshUser(); // ignore promise safely
+        };
+
+        authEvent.addEventListener("refresh", handler);
+
+        return () => {
+            authEvent.removeEventListener("refresh", handler);
+        };
+    }, [refreshUser]);
 
     return (
         <AuthContext.Provider value={{user, loading, login, register, logout, refreshUser, socialLogin}}>

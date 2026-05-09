@@ -217,17 +217,17 @@ export default function ForgotPasswordPage() {
                                 >
 
                                     {/* Email Field */}
-                                    <div className="space-y-2">
+                                    <div className="space-y-5">
 
                                         <label className="text-sm font-medium text-muted-foreground">
                                             Email address
                                         </label>
 
-                                        <div className="relative">
+                                        <div className="relative ">
 
                                             <Mail
                                                 size={18}
-                                                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                                                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground mb-5"
                                             />
 
                                             <Input

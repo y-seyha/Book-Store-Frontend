@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { toast } from "sonner";
+import {useState, useEffect} from "react";
+import {toast} from "sonner";
 import {apiGet, apiPost, createBrowserApiClient} from "@/lib/api.helper";
 import FloatingInput from "@/components/ui/FloatingInput";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
 import {Button} from "@/components/ui/button";
 import {useRouter} from "next/navigation";
+import {useAuth} from "@/context/AuthContext";
 
 type SellerForm = {
     store_name: string;
@@ -16,6 +17,7 @@ type SellerForm = {
 };
 
 export default function BecomeSellerPage() {
+    const {refreshUser} = useAuth();
     const client = createBrowserApiClient();
     const router = useRouter();
 
@@ -42,7 +44,7 @@ export default function BecomeSellerPage() {
                     });
                 }
             } catch (err) {
-              console.log(err);
+                console.log(err);
             }
         };
 
@@ -50,7 +52,7 @@ export default function BecomeSellerPage() {
     }, []);
 
     const handleChange = (key: keyof SellerForm, value: string) => {
-        setForm((prev) => ({ ...prev, [key]: value }));
+        setForm((prev) => ({...prev, [key]: value}));
     };
 
     const handleSubmit = async () => {
@@ -68,11 +70,22 @@ export default function BecomeSellerPage() {
                 form
             );
 
-            toast.success("Request sent! Waiting for approval 🎉");
-            router.push("/");
+            await refreshUser();
+
+            toast.success("You are now a seller 🎉", {
+                description: "You can now manage your store from the seller dashboard.",
+                action: {
+                    label: "Go to dashboard",
+                    onClick: () => {
+                        router.push("/seller/dashboard");
+                    },
+                },
+                duration: 5000,
+            });
+
         } catch (err: any) {
             toast.error(
-                err?.response?.data?.message || "Something went wrong"
+                "Something went wrong, Please try again later",
             );
         } finally {
             setLoading(false);

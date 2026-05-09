@@ -27,6 +27,7 @@ export default function SignupForm() {
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [step, setStep] = useState<"form" | "success">("form");
+    const [submittedEmail, setSubmittedEmail] = useState("");
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -40,13 +41,15 @@ export default function SignupForm() {
                 lastName: lastName.trim(),
             };
 
+            setSubmittedEmail(data.email);
+
             registerInputSchema.parse(data);
 
             await register(data);
 
             setStep("success");
 
-            toast.success("Account created 🎉", {
+            toast.success("Account created ", {
                 description: "Please check your email to verify your account.",
             });
 
@@ -77,10 +80,10 @@ export default function SignupForm() {
     if (step === "success") {
         return (
             <Card className="w-full max-w-sm mx-auto shadow-lg text-center p-6 space-y-4">
-                <CardTitle>Check your email 📩</CardTitle>
+                <CardTitle>Check your email account</CardTitle>
 
                 <CardDescription>
-                    We sent a verification link to <b>{email}</b>
+                    We sent a verification link to <b>{submittedEmail}</b>
                 </CardDescription>
 
                 <Button onClick={() => setStep("form")}>
