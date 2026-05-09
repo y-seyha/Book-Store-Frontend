@@ -1,7 +1,7 @@
 "use client";
 
-import { useAuth } from "@/context/AuthContext";
-import React, { useState } from "react";
+import {useAuth} from "@/context/AuthContext";
+import React, {useState} from "react";
 import {
     Card,
     CardContent,
@@ -9,17 +9,17 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import {Label} from "@/components/ui/label";
+import {Input} from "@/components/ui/input";
+import {Button} from "@/components/ui/button";
 import {toast} from "sonner";
 import Link from "next/link";
-import { Eye, EyeOff } from "lucide-react";
-import { loginInputSchema } from "@/types/schema";
+import {Eye, EyeOff} from "lucide-react";
+import {loginInputSchema} from "@/types/schema";
 
 
 export default function LoginForm() {
-    const { login } = useAuth();
+    const {login} = useAuth();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
@@ -101,21 +101,32 @@ export default function LoginForm() {
                                 onClick={() => setShowPassword((prev) => !prev)}
                                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
                             >
-                                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                {showPassword ? <EyeOff size={18}/> : <Eye size={18}/>}
                             </button>
                         </div>
                     </div>
 
-                    <Button type="submit" className="w-full" disabled={loading || !email || !password }>
+                    <Button type="submit" className="w-full" disabled={loading || !email || !password}>
                         {loading ? "Signing in..." : "Sign In"}
                     </Button>
 
-                    <div className="text-center text-sm text-muted-foreground mt-2">
-                        Does not have an account?{" "}
-                        <Link href="/auth/signup" className="text-blue-600 hover:underline">
-                            Register
+                    <div className="text-center text-sm text-muted-foreground mt-2 flex flex-col gap-1">
+                        <div>
+                            Don’t have an account?{" "}
+                            <Link href="/auth/signup" className="text-blue-600 hover:underline">
+                                Register
+                            </Link>
+                        </div>
+
+                        <Link
+                            href="/auth/forgot-password"
+                            className="text-blue-600 hover:underline"
+                        >
+                            Forgot password?
                         </Link>
                     </div>
+
+
                 </form>
             </CardContent>
 
