@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
+import {useEffect, useState} from "react";
+import {Button} from "@/components/ui/button";
 import {
     apiDelete,
     apiGet,
-    apiPatch, apiPut,
+    apiPut,
     createBrowserApiClient,
 } from "@/lib/api.helper";
 
@@ -13,8 +13,7 @@ import SearchBar from "@/components/common/admin/SearchBar";
 import AppModal from "@/components/common/admin/Modal";
 import DataTable from "@/components/common/admin/DataTable";
 import RowDropdown from "@/components/common/admin/RowDropdown";
-import { toast } from "sonner";
-import AdminMainLayout from "@/components/layout/AdminMainLayout";
+import {toast} from "sonner";
 
 const client = createBrowserApiClient();
 
@@ -157,7 +156,7 @@ export default function SellerDashboard() {
 
             setSellers((prev) =>
                 prev.map((s) =>
-                    s.id === editingId ? { ...s, ...updated } : s
+                    s.id === editingId ? {...s, ...updated} : s
                 )
             );
 
@@ -174,7 +173,7 @@ export default function SellerDashboard() {
 
     const columns = [
 
-        { key: "id", title: "ID" },
+        {key: "id", title: "ID"},
 
         {
             key: "store",
@@ -236,120 +235,118 @@ export default function SellerDashboard() {
     });
 
     return (
-        <AdminMainLayout>
-            <div className="p-6 space-y-4">
-                <div className="flex justify-between">
-                    <h1 className="text-2xl font-semibold">Sellers</h1>
+        <div className="p-6 space-y-4">
+            <div className="flex justify-between">
+                <h1 className="text-2xl font-semibold">Sellers</h1>
+            </div>
+
+            <SearchBar value={search} onChange={setSearch}/>
+
+            {loading ? (
+                <p>Loading...</p>
+            ) : (
+                <DataTable columns={columns} data={filteredSellers}/>
+            )}
+
+            {/* EDIT MODAL */}
+            <AppModal
+                open={open}
+                onOpenChange={setOpen}
+                title="Edit Seller"
+            >
+                <div className="space-y-3">
+                    <input
+                        className="border p-2 w-full"
+                        placeholder="Store Name"
+                        value={form.store_name}
+                        onChange={(e) =>
+                            setForm({
+                                ...form,
+                                store_name: e.target.value,
+                            })
+                        }
+                    />
+
+                    <textarea
+                        className="border p-2 w-full"
+                        placeholder="Description"
+                        value={form.store_description}
+                        onChange={(e) =>
+                            setForm({
+                                ...form,
+                                store_description: e.target.value,
+                            })
+                        }
+                    />
+
+                    <input
+                        className="border p-2 w-full"
+                        placeholder="Address"
+                        value={form.store_address}
+                        onChange={(e) =>
+                            setForm({
+                                ...form,
+                                store_address: e.target.value,
+                            })
+                        }
+                    />
+
+                    <input
+                        className="border p-2 w-full"
+                        placeholder="Phone"
+                        value={form.phone}
+                        onChange={(e) =>
+                            setForm({
+                                ...form,
+                                phone: e.target.value,
+                            })
+                        }
+                    />
+
+                    <input
+                        type="file"
+                        className="border p-2 w-full"
+                        onChange={(e) =>
+                            setForm({
+                                ...form,
+                                logo: e.target.files?.[0] || null,
+                            })
+                        }
+                    />
+
+                    <Button onClick={handleSubmit}>
+                        Update Seller
+                    </Button>
                 </div>
+            </AppModal>
 
-                <SearchBar value={search} onChange={setSearch} />
+            {/* DELETE */}
+            <AppModal
+                open={!!deleteId}
+                onOpenChange={() => setDeleteId(null)}
+                title="Delete Seller"
+            >
+                <div className="space-y-4">
+                    <p>Are you sure?</p>
 
-                {loading ? (
-                    <p>Loading...</p>
-                ) : (
-                    <DataTable columns={columns} data={filteredSellers} />
-                )}
+                    <div className="flex justify-end gap-2">
+                        <Button
+                            variant="outline"
+                            onClick={() => setDeleteId(null)}
+                        >
+                            Cancel
+                        </Button>
 
-                {/* EDIT MODAL */}
-                <AppModal
-                    open={open}
-                    onOpenChange={setOpen}
-                    title="Edit Seller"
-                >
-                    <div className="space-y-3">
-                        <input
-                            className="border p-2 w-full"
-                            placeholder="Store Name"
-                            value={form.store_name}
-                            onChange={(e) =>
-                                setForm({
-                                    ...form,
-                                    store_name: e.target.value,
-                                })
-                            }
-                        />
-
-                        <textarea
-                            className="border p-2 w-full"
-                            placeholder="Description"
-                            value={form.store_description}
-                            onChange={(e) =>
-                                setForm({
-                                    ...form,
-                                    store_description: e.target.value,
-                                })
-                            }
-                        />
-
-                        <input
-                            className="border p-2 w-full"
-                            placeholder="Address"
-                            value={form.store_address}
-                            onChange={(e) =>
-                                setForm({
-                                    ...form,
-                                    store_address: e.target.value,
-                                })
-                            }
-                        />
-
-                        <input
-                            className="border p-2 w-full"
-                            placeholder="Phone"
-                            value={form.phone}
-                            onChange={(e) =>
-                                setForm({
-                                    ...form,
-                                    phone: e.target.value,
-                                })
-                            }
-                        />
-
-                        <input
-                            type="file"
-                            className="border p-2 w-full"
-                            onChange={(e) =>
-                                setForm({
-                                    ...form,
-                                    logo: e.target.files?.[0] || null,
-                                })
-                            }
-                        />
-
-                        <Button onClick={handleSubmit}>
-                            Update Seller
+                        <Button
+                            onClick={confirmDelete}
+                            disabled={deleting}
+                            className="bg-red-600 text-white"
+                        >
+                            {deleting ? "Deleting..." : "Delete"}
                         </Button>
                     </div>
-                </AppModal>
-
-                {/* DELETE */}
-                <AppModal
-                    open={!!deleteId}
-                    onOpenChange={() => setDeleteId(null)}
-                    title="Delete Seller"
-                >
-                    <div className="space-y-4">
-                        <p>Are you sure?</p>
-
-                        <div className="flex justify-end gap-2">
-                            <Button
-                                variant="outline"
-                                onClick={() => setDeleteId(null)}
-                            >
-                                Cancel
-                            </Button>
-
-                            <Button
-                                onClick={confirmDelete}
-                                disabled={deleting}
-                                className="bg-red-600 text-white"
-                            >
-                                {deleting ? "Deleting..." : "Delete"}
-                            </Button>
-                        </div>
-                    </div>
-                </AppModal>
-            </div>
-        </AdminMainLayout>
+                </div>
+            </AppModal>
+        </div>
     );
 }

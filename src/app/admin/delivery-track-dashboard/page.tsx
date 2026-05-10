@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 
-import { Button } from "@/components/ui/button";
+import {Button} from "@/components/ui/button";
 import {
     apiGet,
     apiPatch,
@@ -12,8 +12,7 @@ import {
 import SearchBar from "@/components/common/admin/SearchBar";
 import AppModal from "@/components/common/admin/Modal";
 import DataTable from "@/components/common/admin/DataTable";
-import { toast } from "sonner";
-import AdminMainLayout from "@/components/layout/AdminMainLayout";
+import {toast} from "sonner";
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
 import {MoreHorizontal} from "lucide-react";
 
@@ -155,7 +154,7 @@ export default function DeliveryTrackingDashboard() {
     });
 
     const columns = [
-        { key: "id", title: "ID" },
+        {key: "id", title: "ID"},
 
         {
             key: "order",
@@ -185,7 +184,7 @@ export default function DeliveryTrackingDashboard() {
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="outline" size="sm">
-                            <MoreHorizontal className="w-4 h-4" />
+                            <MoreHorizontal className="w-4 h-4"/>
                         </Button>
                     </DropdownMenuTrigger>
 
@@ -224,67 +223,66 @@ export default function DeliveryTrackingDashboard() {
     ];
 
     return (
-        <AdminMainLayout>
-            <div className="p-6 space-y-4">
-                <h1 className="text-2xl font-semibold">
-                    Delivery Tracking
-                </h1>
+        <div className="p-6 space-y-4">
+            <h1 className="text-2xl font-semibold">
+                Delivery Tracking
+            </h1>
 
-                <SearchBar value={search} onChange={setSearch} />
+            <SearchBar value={search} onChange={setSearch}/>
 
-                <DataTable columns={columns} data={filtered} />
+            <DataTable columns={columns} data={filtered}/>
 
-                <AppModal
-                    open={assignOpen}
-                    onOpenChange={setAssignOpen}
-                    title="Assign Driver"
-                >
-                    <div className="space-y-3">
-                        <select
-                            className="border p-2 w-full"
-                            onChange={(e) =>
-                                setSelectedDriverId(Number(e.target.value))
-                            }
-                        >
-                            <option value="">Select driver</option>
+            <AppModal
+                open={assignOpen}
+                onOpenChange={setAssignOpen}
+                title="Assign Driver"
+            >
+                <div className="space-y-3">
+                    <select
+                        className="border p-2 w-full"
+                        onChange={(e) =>
+                            setSelectedDriverId(Number(e.target.value))
+                        }
+                    >
+                        <option value="">Select driver</option>
 
-                            {drivers.map((d) => (
-                                <option key={d.id} value={d.id}>
-                                    {d.user.first_name} {d.user.last_name}
-                                </option>
-                            ))}
-                        </select>
+                        {drivers.map((d) => (
+                            <option key={d.id} value={d.id}>
+                                {d.user.first_name} {d.user.last_name}
+                            </option>
+                        ))}
+                    </select>
 
-                        <Button onClick={assignDriver}>
-                            Assign
-                        </Button>
-                    </div>
-                </AppModal>
+                    <Button onClick={assignDriver}>
+                        Assign
+                    </Button>
+                </div>
+            </AppModal>
 
-                <AppModal
-                    open={failOpen}
-                    onOpenChange={setFailOpen}
-                    title="Mark Failed"
-                >
-                    <div className="space-y-3">
-                        <input
-                            className="border p-2 w-full"
-                            placeholder="Reason"
-                            value={failForm.reason}
-                            onChange={(e) =>
-                                setFailForm({ reason: e.target.value })
-                            }
-                        />
+            <AppModal
+                open={failOpen}
+                onOpenChange={setFailOpen}
+                title="Mark Failed"
+            >
+                <div className="space-y-3">
+                    <input
+                        className="border p-2 w-full"
+                        placeholder="Reason"
+                        value={failForm.reason}
+                        onChange={(e) =>
+                            setFailForm({reason: e.target.value})
+                        }
+                    />
 
-                        <Button
-                            className="bg-red-600 text-white"
-                            onClick={markFailed}
-                        >
-                            Confirm
-                        </Button>
-                    </div>
-                </AppModal>
-            </div>
-        </AdminMainLayout>
+                    <Button
+                        className="bg-red-600 text-white"
+                        onClick={markFailed}
+                    >
+                        Confirm
+                    </Button>
+                </div>
+            </AppModal>
+        </div>
+
     );
 }

@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 
-import { Button } from "@/components/ui/button";
+import {Button} from "@/components/ui/button";
 import {
     apiDelete,
     apiGet,
@@ -15,8 +15,7 @@ import SearchBar from "@/components/common/admin/SearchBar";
 import AppModal from "@/components/common/admin/Modal";
 import DataTable from "@/components/common/admin/DataTable";
 import RowDropdown from "@/components/common/admin/RowDropdown";
-import { toast } from "sonner";
-import AdminMainLayout from "@/components/layout/AdminMainLayout";
+import {toast} from "sonner";
 
 const client = createBrowserApiClient();
 
@@ -143,8 +142,8 @@ export default function UserDashboard() {
                 first_name: form.first_name,
                 last_name: form.last_name,
                 role: form.role,
-                ...(form.phone && { phone: form.phone }),
-                ...(!editingId && { password: form.password }),
+                ...(form.phone && {phone: form.phone}),
+                ...(!editingId && {password: form.password}),
             };
 
 
@@ -174,7 +173,7 @@ export default function UserDashboard() {
                 setUsers((prev) =>
                     prev.map((u) =>
                         u.id === editingId
-                            ? { ...u, ...updated }
+                            ? {...u, ...updated}
                             : u
                     )
                 );
@@ -202,12 +201,12 @@ export default function UserDashboard() {
             await apiPatch(
                 client,
                 `/admin/users/${id}/role`,
-                { role }
+                {role}
             );
 
             setUsers((prev) =>
                 prev.map((u) =>
-                    u.id === id ? { ...u, role } : u
+                    u.id === id ? {...u, role} : u
                 )
             );
 
@@ -251,14 +250,13 @@ export default function UserDashboard() {
     };
 
 
-
     const columns = [
-        { key: "id", title: "ID" },
-        { key: "email", title: "Email" },
-        { key: "first_name", title: "First Name" },
-        { key: "last_name", title: "Last Name" },
-        { key: "phone", title: "Phone" },
-        { key: "role", title: "Role" },
+        {key: "id", title: "ID"},
+        {key: "email", title: "Email"},
+        {key: "first_name", title: "First Name"},
+        {key: "last_name", title: "Last Name"},
+        {key: "phone", title: "Phone"},
+        {key: "role", title: "Role"},
         {
             key: "verified",
             title: "Verified",
@@ -294,146 +292,144 @@ export default function UserDashboard() {
     ];
 
     return (
-        <AdminMainLayout>
-            <div className="p-6 space-y-4">
-                <div className="flex justify-between">
-                    <h1 className="text-2xl font-semibold">Users</h1>
-                    <Button onClick={openCreate}>+ Add User</Button>
+        <div className="p-6 space-y-4">
+            <div className="flex justify-between">
+                <h1 className="text-2xl font-semibold">Users</h1>
+                <Button onClick={openCreate}>+ Add User</Button>
+            </div>
+
+            <SearchBar value={search} onChange={setSearch}/>
+
+            {loading ? (
+                <p>Loading...</p>
+            ) : (
+                <DataTable columns={columns} data={users}/>
+            )}
+
+            {/* CREATE / EDIT */}
+            <AppModal
+                open={open}
+                onOpenChange={setOpen}
+                title={editingId ? "Edit User" : "Create User"}
+            >
+                <div className="space-y-3">
+                    <input
+                        className="border p-2 w-full"
+                        placeholder="Email"
+                        value={form.email}
+                        onChange={(e) =>
+                            setForm({
+                                ...form,
+                                email: e.target.value,
+                            })
+                        }
+                    />
+
+                    {!editingId && (
+                        <input
+                            type="password"
+                            className="border p-2 w-full"
+                            placeholder="Password"
+                            value={form.password}
+                            onChange={(e) =>
+                                setForm({
+                                    ...form,
+                                    password: e.target.value,
+                                })
+                            }
+                        />
+                    )}
+
+                    <input
+                        className="border p-2 w-full"
+                        placeholder="First Name"
+                        value={form.first_name}
+                        onChange={(e) =>
+                            setForm({
+                                ...form,
+                                first_name: e.target.value,
+                            })
+                        }
+                    />
+
+                    <input
+                        className="border p-2 w-full"
+                        placeholder="Last Name"
+                        value={form.last_name}
+                        onChange={(e) =>
+                            setForm({
+                                ...form,
+                                last_name: e.target.value,
+                            })
+                        }
+                    />
+
+                    <input
+                        className="border p-2 w-full"
+                        placeholder="Phone"
+                        value={form.phone}
+                        onChange={(e) =>
+                            setForm({
+                                ...form,
+                                phone: e.target.value,
+                            })
+                        }
+                    />
+
+                    <select
+                        className="border p-2 w-full"
+                        value={form.role}
+                        onChange={(e) =>
+                            setForm({
+                                ...form,
+                                role: e.target.value,
+                            })
+                        }
+                    >
+                        <option value="customer">Customer</option>
+                        <option value="admin">Admin</option>
+                    </select>
+
+                    <Button
+                        onClick={handleSubmit}
+                        disabled={submitting}
+                    >
+                        {submitting
+                            ? "Saving..."
+                            : editingId
+                                ? "Update User"
+                                : "Create User"}
+                    </Button>
                 </div>
+            </AppModal>
 
-                <SearchBar value={search} onChange={setSearch} />
+            {/* DELETE */}
+            <AppModal
+                open={!!deleteId}
+                onOpenChange={() => setDeleteId(null)}
+                title="Delete User"
+            >
+                <div className="space-y-4">
+                    <p>Are you sure?</p>
 
-                {loading ? (
-                    <p>Loading...</p>
-                ) : (
-                    <DataTable columns={columns} data={users} />
-                )}
-
-                {/* CREATE / EDIT */}
-                <AppModal
-                    open={open}
-                    onOpenChange={setOpen}
-                    title={editingId ? "Edit User" : "Create User"}
-                >
-                    <div className="space-y-3">
-                        <input
-                            className="border p-2 w-full"
-                            placeholder="Email"
-                            value={form.email}
-                            onChange={(e) =>
-                                setForm({
-                                    ...form,
-                                    email: e.target.value,
-                                })
-                            }
-                        />
-
-                        {!editingId && (
-                            <input
-                                type="password"
-                                className="border p-2 w-full"
-                                placeholder="Password"
-                                value={form.password}
-                                onChange={(e) =>
-                                    setForm({
-                                        ...form,
-                                        password: e.target.value,
-                                    })
-                                }
-                            />
-                        )}
-
-                        <input
-                            className="border p-2 w-full"
-                            placeholder="First Name"
-                            value={form.first_name}
-                            onChange={(e) =>
-                                setForm({
-                                    ...form,
-                                    first_name: e.target.value,
-                                })
-                            }
-                        />
-
-                        <input
-                            className="border p-2 w-full"
-                            placeholder="Last Name"
-                            value={form.last_name}
-                            onChange={(e) =>
-                                setForm({
-                                    ...form,
-                                    last_name: e.target.value,
-                                })
-                            }
-                        />
-
-                        <input
-                            className="border p-2 w-full"
-                            placeholder="Phone"
-                            value={form.phone}
-                            onChange={(e) =>
-                                setForm({
-                                    ...form,
-                                    phone: e.target.value,
-                                })
-                            }
-                        />
-
-                        <select
-                            className="border p-2 w-full"
-                            value={form.role}
-                            onChange={(e) =>
-                                setForm({
-                                    ...form,
-                                    role: e.target.value,
-                                })
-                            }
+                    <div className="flex justify-end gap-2">
+                        <Button
+                            variant="outline"
+                            onClick={() => setDeleteId(null)}
                         >
-                            <option value="customer">Customer</option>
-                            <option value="admin">Admin</option>
-                        </select>
+                            Cancel
+                        </Button>
 
                         <Button
-                            onClick={handleSubmit}
-                            disabled={submitting}
+                            onClick={confirmDelete}
+                            disabled={deleting}
+                            className="bg-red-600 text-white"
                         >
-                            {submitting
-                                ? "Saving..."
-                                : editingId
-                                    ? "Update User"
-                                    : "Create User"}
+                            {deleting ? "Deleting..." : "Delete"}
                         </Button>
                     </div>
-                </AppModal>
-
-                {/* DELETE */}
-                <AppModal
-                    open={!!deleteId}
-                    onOpenChange={() => setDeleteId(null)}
-                    title="Delete User"
-                >
-                    <div className="space-y-4">
-                        <p>Are you sure?</p>
-
-                        <div className="flex justify-end gap-2">
-                            <Button
-                                variant="outline"
-                                onClick={() => setDeleteId(null)}
-                            >
-                                Cancel
-                            </Button>
-
-                            <Button
-                                onClick={confirmDelete}
-                                disabled={deleting}
-                                className="bg-red-600 text-white"
-                            >
-                                {deleting ? "Deleting..." : "Delete"}
-                            </Button>
-                        </div>
-                    </div>
-                </AppModal>
-            </div>
-        </AdminMainLayout>
+                </div>
+            </AppModal>
+        </div>
     );
 }

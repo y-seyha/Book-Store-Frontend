@@ -72,7 +72,7 @@ export default function BecomeSellerPage() {
 
             await refreshUser();
 
-            toast.success("You are now a seller 🎉", {
+            toast.success("You are now a seller ", {
                 description: "You can now manage your store from the seller dashboard.",
                 action: {
                     label: "Go to dashboard",
@@ -82,6 +82,8 @@ export default function BecomeSellerPage() {
                 },
                 duration: 5000,
             });
+
+            router.push("/");
 
         } catch (err: any) {
             toast.error(

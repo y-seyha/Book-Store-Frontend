@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 
-import { Button } from "@/components/ui/button";
+import {Button} from "@/components/ui/button";
 import {
     apiDelete,
     apiGet,
@@ -16,8 +16,7 @@ import AppModal from "@/components/common/admin/Modal";
 import DataTable from "@/components/common/admin/DataTable";
 import RowDropdown from "@/components/common/admin/RowDropdown";
 import StatusBadge from "@/components/common/admin/StatusBadge";
-import { toast } from "sonner";
-import AdminMainLayout from "@/components/layout/AdminMainLayout";
+import {toast} from "sonner";
 
 const client = createBrowserApiClient();
 
@@ -152,7 +151,7 @@ export default function ProductDashboard() {
 
     // Table
     const columns = [
-        { key: "id", title: "ID" },
+        {key: "id", title: "ID"},
         {
             key: "image",
             title: "Image",
@@ -166,7 +165,7 @@ export default function ProductDashboard() {
                     <span className="text-gray-400">No image</span>
                 ),
         },
-        { key: "name", title: "Name" },
+        {key: "name", title: "Name"},
         {
             key: "category",
             title: "Category",
@@ -181,7 +180,7 @@ export default function ProductDashboard() {
             key: "stock",
             title: "Stock",
             render: (row: any) => (
-                <StatusBadge stock={row?.stock ?? 0} />
+                <StatusBadge stock={row?.stock ?? 0}/>
             ),
         },
         {
@@ -250,182 +249,180 @@ export default function ProductDashboard() {
     };
 
     return (
-        <AdminMainLayout>
-            <div className="p-6 space-y-4">
-                <div className="flex justify-between items-center">
-                    <h1 className="text-2xl font-semibold">
-                        Products
-                    </h1>
-                    <Button onClick={openCreate}>
-                        + Add Product
-                    </Button>
-                </div>
+        <div className="p-6 space-y-4">
+            <div className="flex justify-between items-center">
+                <h1 className="text-2xl font-semibold">
+                    Products
+                </h1>
+                <Button onClick={openCreate}>
+                    + Add Product
+                </Button>
+            </div>
 
-                <SearchBar value={search} onChange={setSearch} />
+            <SearchBar value={search} onChange={setSearch}/>
 
-                {loading ? (
-                    <p>Loading products...</p>
-                ) : (
-                    <>
-                        <DataTable
-                            columns={columns}
-                            data={products.filter(Boolean)}
-                        />
+            {loading ? (
+                <p>Loading products...</p>
+            ) : (
+                <>
+                    <DataTable
+                        columns={columns}
+                        data={products.filter(Boolean)}
+                    />
 
-                        <div className="flex justify-between items-center mt-4">
-                            <p className="text-sm text-gray-500">
-                                Page {page} of {lastPage} • {total} items
-                            </p>
-
-                            <div className="flex gap-2">
-                                <Button
-                                    disabled={page === 1}
-                                    onClick={() => {
-                                        const newPage = page - 1;
-                                        setPage(newPage);
-                                        fetchProducts(debouncedSearch, newPage);
-                                    }}
-                                >
-                                    Prev
-                                </Button>
-
-                                <Button disabled>
-                                    {page}
-                                </Button>
-
-                                <Button
-                                    disabled={page === lastPage}
-                                    onClick={() => {
-                                        const newPage = page + 1;
-                                        setPage(newPage);
-                                        fetchProducts(debouncedSearch, newPage);
-                                    }}
-                                >
-                                    Next
-                                </Button>
-
-                            </div>
-                        </div>
-                    </>
-                )}
-
-                <AppModal
-                    open={open}
-                    onOpenChange={setOpen}
-                    title={editingId ? "Edit Product" : "Create Product"}
-                >
-                    <div className="space-y-3">
-                        <input
-                            className="border p-2 w-full"
-                            placeholder="Product name"
-                            value={form.name}
-                            onChange={(e) =>
-                                setForm({ ...form, name: e.target.value })
-                            }
-                        />
-
-                        <textarea
-                            className="border p-2 w-full"
-                            placeholder="Description"
-                            value={form.description}
-                            onChange={(e) =>
-                                setForm({ ...form, description: e.target.value })
-                            }
-                        />
-
-                        <input
-                            type="number"
-                            className="border p-2 w-full"
-                            placeholder="Price"
-                            value={form.price}
-                            onChange={(e) =>
-                                setForm({ ...form, price: e.target.value })
-                            }
-                        />
-
-                        <input
-                            type="number"
-                            className="border p-2 w-full"
-                            placeholder="Stock"
-                            value={form.stock}
-                            onChange={(e) =>
-                                setForm({
-                                    ...form,
-                                    stock: Number(e.target.value),
-                                })
-                            }
-                        />
-
-                        <select
-                            className="border p-2 w-full"
-                            value={form.category_id || ""}
-                            onChange={(e) =>
-                                setForm({
-                                    ...form,
-                                    category_id: Number(e.target.value),
-                                })
-                            }
-                        >
-                            <option value="">Select category</option>
-                            {categories.map((cat) => (
-                                <option key={cat.id} value={cat.id}>
-                                    {cat.name}
-                                </option>
-                            ))}
-                        </select>
-
-                        <input
-                            type="file"
-                            className="border p-2 w-full"
-                            onChange={(e) =>
-                                setForm({
-                                    ...form,
-                                    image: e.target.files?.[0] || null,
-                                })
-                            }
-                        />
-
-                        <Button onClick={handleSubmit} disabled={submitting}>
-                            {submitting
-                                ? "Saving..."
-                                : editingId
-                                    ? "Update Product"
-                                    : "Create Product"}
-                        </Button>
-                    </div>
-                </AppModal>
-
-                {/*//Confirm Delete Modal*/}
-                <AppModal
-                    open={!!deleteId}
-                    onOpenChange={() => setDeleteId(null)}
-                    title="Delete Product"
-                >
-                    <div className="space-y-4">
-                        <p className="text-gray-600">
-                            Are you sure you want to delete this product?
-                            This action cannot be undone.
+                    <div className="flex justify-between items-center mt-4">
+                        <p className="text-sm text-gray-500">
+                            Page {page} of {lastPage} • {total} items
                         </p>
 
-                        <div className="flex justify-end gap-3">
+                        <div className="flex gap-2">
                             <Button
-                                variant="outline"
-                                onClick={() => setDeleteId(null)}
+                                disabled={page === 1}
+                                onClick={() => {
+                                    const newPage = page - 1;
+                                    setPage(newPage);
+                                    fetchProducts(debouncedSearch, newPage);
+                                }}
                             >
-                                Cancel
+                                Prev
+                            </Button>
+
+                            <Button disabled>
+                                {page}
                             </Button>
 
                             <Button
-                                onClick={confirmDelete}
-                                disabled={deleting}
-                                className="bg-red-600 hover:bg-red-700 text-white"
+                                disabled={page === lastPage}
+                                onClick={() => {
+                                    const newPage = page + 1;
+                                    setPage(newPage);
+                                    fetchProducts(debouncedSearch, newPage);
+                                }}
                             >
-                                {deleting ? "Deleting..." : "Delete"}
+                                Next
                             </Button>
+
                         </div>
                     </div>
-                </AppModal>
-            </div>
-        </AdminMainLayout>
+                </>
+            )}
+
+            <AppModal
+                open={open}
+                onOpenChange={setOpen}
+                title={editingId ? "Edit Product" : "Create Product"}
+            >
+                <div className="space-y-3">
+                    <input
+                        className="border p-2 w-full"
+                        placeholder="Product name"
+                        value={form.name}
+                        onChange={(e) =>
+                            setForm({...form, name: e.target.value})
+                        }
+                    />
+
+                    <textarea
+                        className="border p-2 w-full"
+                        placeholder="Description"
+                        value={form.description}
+                        onChange={(e) =>
+                            setForm({...form, description: e.target.value})
+                        }
+                    />
+
+                    <input
+                        type="number"
+                        className="border p-2 w-full"
+                        placeholder="Price"
+                        value={form.price}
+                        onChange={(e) =>
+                            setForm({...form, price: e.target.value})
+                        }
+                    />
+
+                    <input
+                        type="number"
+                        className="border p-2 w-full"
+                        placeholder="Stock"
+                        value={form.stock}
+                        onChange={(e) =>
+                            setForm({
+                                ...form,
+                                stock: Number(e.target.value),
+                            })
+                        }
+                    />
+
+                    <select
+                        className="border p-2 w-full"
+                        value={form.category_id || ""}
+                        onChange={(e) =>
+                            setForm({
+                                ...form,
+                                category_id: Number(e.target.value),
+                            })
+                        }
+                    >
+                        <option value="">Select category</option>
+                        {categories.map((cat) => (
+                            <option key={cat.id} value={cat.id}>
+                                {cat.name}
+                            </option>
+                        ))}
+                    </select>
+
+                    <input
+                        type="file"
+                        className="border p-2 w-full"
+                        onChange={(e) =>
+                            setForm({
+                                ...form,
+                                image: e.target.files?.[0] || null,
+                            })
+                        }
+                    />
+
+                    <Button onClick={handleSubmit} disabled={submitting}>
+                        {submitting
+                            ? "Saving..."
+                            : editingId
+                                ? "Update Product"
+                                : "Create Product"}
+                    </Button>
+                </div>
+            </AppModal>
+
+            {/*//Confirm Delete Modal*/}
+            <AppModal
+                open={!!deleteId}
+                onOpenChange={() => setDeleteId(null)}
+                title="Delete Product"
+            >
+                <div className="space-y-4">
+                    <p className="text-gray-600">
+                        Are you sure you want to delete this product?
+                        This action cannot be undone.
+                    </p>
+
+                    <div className="flex justify-end gap-3">
+                        <Button
+                            variant="outline"
+                            onClick={() => setDeleteId(null)}
+                        >
+                            Cancel
+                        </Button>
+
+                        <Button
+                            onClick={confirmDelete}
+                            disabled={deleting}
+                            className="bg-red-600 hover:bg-red-700 text-white"
+                        >
+                            {deleting ? "Deleting..." : "Delete"}
+                        </Button>
+                    </div>
+                </div>
+            </AppModal>
+        </div>
     );
 }

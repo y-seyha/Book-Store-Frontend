@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import {useEffect, useState} from "react";
+import {toast} from "sonner";
 
 import {
     apiGet,
-    apiPatch,
     apiDelete,
     createBrowserApiClient, apiPut,
 } from "@/lib/api.helper";
@@ -13,9 +12,8 @@ import {
 import SearchBar from "@/components/common/admin/SearchBar";
 import DataTable from "@/components/common/admin/DataTable";
 import RowDropdown from "@/components/common/admin/RowDropdown";
-import AdminMainLayout from "@/components/layout/AdminMainLayout";
 import AppModal from "@/components/common/admin/Modal";
-import { Button } from "@/components/ui/button";
+import {Button} from "@/components/ui/button";
 
 const client = createBrowserApiClient();
 
@@ -99,7 +97,7 @@ export default function ReviewDashboard() {
 
             setReviews((prev) =>
                 prev.map((r) =>
-                    r.id === selected.id ? { ...r, comment: editComment } : r
+                    r.id === selected.id ? {...r, comment: editComment} : r
                 )
             );
 
@@ -133,7 +131,7 @@ export default function ReviewDashboard() {
     };
 
     const columns = [
-        { key: "id", title: "ID" },
+        {key: "id", title: "ID"},
 
         {
             key: "product",
@@ -178,41 +176,40 @@ export default function ReviewDashboard() {
     ];
 
     return (
-        <AdminMainLayout>
-            <div className="p-6 space-y-4">
-                <h1 className="text-2xl font-semibold">Reviews</h1>
+        <div className="p-6 space-y-4">
+            <h1 className="text-2xl font-semibold">Reviews</h1>
 
-                {/* FILTERS */}
-                <div className="flex gap-3">
-                    <SearchBar value={search} onChange={setSearch} />
+            {/* FILTERS */}
+            <div className="flex gap-3">
+                <SearchBar value={search} onChange={setSearch}/>
 
-                    <select
-                        className="border p-2"
-                        value={ratingFilter}
-                        onChange={(e) => setRatingFilter(e.target.value)}
-                    >
-                        <option value="">All Ratings</option>
-                        <option value="5">5 ⭐</option>
-                        <option value="4">4 ⭐</option>
-                        <option value="3">3 ⭐</option>
-                        <option value="2">2 ⭐</option>
-                        <option value="1">1 ⭐</option>
-                    </select>
-                </div>
-
-                {loading ? (
-                    <p>Loading reviews...</p>
-                ) : (
-                    <DataTable columns={columns} data={reviews} />
-                )}
-
-                {/*  EDIT MODAL  */}
-                <AppModal
-                    open={editOpen}
-                    onOpenChange={setEditOpen}
-                    title="Edit Review"
+                <select
+                    className="border p-2"
+                    value={ratingFilter}
+                    onChange={(e) => setRatingFilter(e.target.value)}
                 >
-                    <div className="space-y-3">
+                    <option value="">All Ratings</option>
+                    <option value="5">5 ⭐</option>
+                    <option value="4">4 ⭐</option>
+                    <option value="3">3 ⭐</option>
+                    <option value="2">2 ⭐</option>
+                    <option value="1">1 ⭐</option>
+                </select>
+            </div>
+
+            {loading ? (
+                <p>Loading reviews...</p>
+            ) : (
+                <DataTable columns={columns} data={reviews}/>
+            )}
+
+            {/*  EDIT MODAL  */}
+            <AppModal
+                open={editOpen}
+                onOpenChange={setEditOpen}
+                title="Edit Review"
+            >
+                <div className="space-y-3">
                         <textarea
                             className="border p-2 w-full"
                             value={editComment}
@@ -221,41 +218,40 @@ export default function ReviewDashboard() {
                             }
                         />
 
-                        <Button onClick={handleUpdate}>
-                            Save Changes
+                    <Button onClick={handleUpdate}>
+                        Save Changes
+                    </Button>
+                </div>
+            </AppModal>
+
+            {/*  DELETE MODAL  */}
+            <AppModal
+                open={deleteOpen}
+                onOpenChange={setDeleteOpen}
+                title="Delete Review"
+            >
+                <div className="space-y-4">
+                    <p>
+                        Are you sure you want to delete this review?
+                    </p>
+
+                    <div className="flex justify-end gap-2">
+                        <Button
+                            variant="outline"
+                            onClick={() => setDeleteOpen(false)}
+                        >
+                            Cancel
+                        </Button>
+
+                        <Button
+                            className="bg-red-600 text-white"
+                            onClick={handleDelete}
+                        >
+                            Delete
                         </Button>
                     </div>
-                </AppModal>
-
-                {/*  DELETE MODAL  */}
-                <AppModal
-                    open={deleteOpen}
-                    onOpenChange={setDeleteOpen}
-                    title="Delete Review"
-                >
-                    <div className="space-y-4">
-                        <p>
-                            Are you sure you want to delete this review?
-                        </p>
-
-                        <div className="flex justify-end gap-2">
-                            <Button
-                                variant="outline"
-                                onClick={() => setDeleteOpen(false)}
-                            >
-                                Cancel
-                            </Button>
-
-                            <Button
-                                className="bg-red-600 text-white"
-                                onClick={handleDelete}
-                            >
-                                Delete
-                            </Button>
-                        </div>
-                    </div>
-                </AppModal>
-            </div>
-        </AdminMainLayout>
+                </div>
+            </AppModal>
+        </div>
     );
 }

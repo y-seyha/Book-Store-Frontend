@@ -1,10 +1,11 @@
-
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useAuth } from "@/context/AuthContext";
-import { useState, useEffect } from "react";
+import {usePathname, useRouter} from "next/navigation";
+import {useAuth} from "@/context/AuthContext";
+import {useState, useEffect} from "react";
+import {ArrowLeft} from "lucide-react";
+
 
 import {
     LayoutDashboard,
@@ -34,8 +35,9 @@ const menu = [
 ];
 
 export default function SellerSidebar() {
+    const router = useRouter();
     const pathname = usePathname();
-    const { logout } = useAuth();
+    const {logout} = useAuth();
 
     const [open, setOpen] = useState(false);
 
@@ -53,7 +55,7 @@ export default function SellerSidebar() {
             {/* MOBILE TOP BAR */}
             <div className="md:hidden flex items-center justify-between px-4 py-3 border-b dark:border-gray-800">
                 <button onClick={() => setOpen(true)}>
-                    <Menu size={22} />
+                    <Menu size={22}/>
                 </button>
 
                 <span className="font-semibold">
@@ -87,7 +89,8 @@ md:translate-x-0
                 {/* TOP */}
                 <div>
                     {/* HEADER */}
-                    <div className="px-6 py-5 font-bold text-lg border-b border-gray-200 dark:border-gray-800 flex justify-between items-center">
+                    <div
+                        className="px-6 py-5 font-bold text-lg border-b border-gray-200 dark:border-gray-800 flex justify-between items-center">
                         <span className="tracking-wide">
                             SELLER PANEL
                         </span>
@@ -97,7 +100,7 @@ md:translate-x-0
                             onClick={() => setOpen(false)}
                             className="md:hidden"
                         >
-                            <X size={20} />
+                            <X size={20}/>
                         </button>
                     </div>
 
@@ -119,10 +122,10 @@ text-sm font-medium
 transition-all duration-200
 
 ${
-    isActive
-        ? "bg-gray-100 dark:bg-gray-900 text-blue-600 dark:text-blue-400"
-        : "hover:bg-gray-100 dark:hover:bg-gray-900"
-}
+                                        isActive
+                                            ? "bg-gray-100 dark:bg-gray-900 text-blue-600 dark:text-blue-400"
+                                            : "hover:bg-gray-100 dark:hover:bg-gray-900"
+                                    }
 `}
                                 >
                                     <Icon
@@ -138,7 +141,8 @@ ${
 
                                     {/* active dot */}
                                     {isActive && (
-                                        <span className="ml-auto w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-400" />
+                                        <span
+                                            className="ml-auto w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-400"/>
                                     )}
                                 </Link>
                             );
@@ -147,19 +151,39 @@ ${
                 </div>
 
                 {/* BOTTOM */}
-                <div className="p-3 border-t border-gray-200 dark:border-gray-800">
+                <div className="p-3 border-t border-gray-200 dark:border-gray-800 space-y-2">
+                    {/* BACK TO HOME */}
+                    <button
+                        onClick={() => {
+                            setOpen(false);
+                            router.push("/");
+                        }}
+                        className="
+            flex items-center gap-3 w-full
+            px-3 py-2.5 rounded-md
+            text-sm font-medium
+            text-gray-600 dark:text-gray-300
+            hover:bg-gray-100 dark:hover:bg-gray-900
+            transition
+        "
+                    >
+                        <ArrowLeft size={18}/>
+                        Back to Home
+                    </button>
+
+                    {/* LOGOUT */}
                     <button
                         onClick={logout}
                         className="
-                            flex items-center gap-3 w-full
-                            px-3 py-2.5 rounded-md
-                            text-sm font-medium
-                            text-red-500
-                            hover:bg-red-50 dark:hover:bg-red-500/10
-                            transition
-                        "
+            flex items-center gap-3 w-full
+            px-3 py-2.5 rounded-md
+            text-sm font-medium
+            text-red-500
+            hover:bg-red-50 dark:hover:bg-red-500/10
+            transition
+        "
                     >
-                        <LogOut size={18} />
+                        <LogOut size={18}/>
                         Logout
                     </button>
                 </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 
 import {
     apiGet,
@@ -12,8 +12,7 @@ import SearchBar from "@/components/common/admin/SearchBar";
 import DataTable from "@/components/common/admin/DataTable";
 import RowDropdown from "@/components/common/admin/RowDropdown";
 import StatusBadge from "@/components/common/admin/StatusBadge";
-import { toast } from "sonner";
-import AdminMainLayout from "@/components/layout/AdminMainLayout";
+import {toast} from "sonner";
 
 const client = createBrowserApiClient();
 
@@ -65,7 +64,7 @@ export default function PaymentDashboard() {
             setPayments(Array.isArray(res) ? res : []);
         } catch (err) {
             console.error(err);
-            toast.error("Failed to load payments ❌");
+            toast.error("Failed to load payments ");
         } finally {
             setLoading(false);
         }
@@ -116,7 +115,7 @@ export default function PaymentDashboard() {
 
             setPayments((prev) =>
                 prev.map((p) =>
-                    p.id === id ? { ...p, status: "FAILED" } : p
+                    p.id === id ? {...p, status: "FAILED"} : p
                 )
             );
 
@@ -152,7 +151,7 @@ export default function PaymentDashboard() {
 
     // table
     const columns = [
-        { key: "id", title: "ID" },
+        {key: "id", title: "ID"},
 
         {
             key: "order",
@@ -182,7 +181,7 @@ export default function PaymentDashboard() {
             key: "status",
             title: "Status",
             render: (row: Payment) => (
-                <StatusBadge status={row.status} />
+                <StatusBadge status={row.status}/>
             ),
         },
 
@@ -210,43 +209,41 @@ export default function PaymentDashboard() {
     ];
 
     return (
-        <AdminMainLayout>
-            <div className="p-6 space-y-4">
-                <h1 className="text-2xl font-semibold">Payments</h1>
+        <div className="p-6 space-y-4">
+            <h1 className="text-2xl font-semibold">Payments</h1>
 
-                {/* Filters */}
-                <div className="flex gap-3">
-                    <SearchBar value={search} onChange={setSearch} />
+            {/* Filters */}
+            <div className="flex gap-3">
+                <SearchBar value={search} onChange={setSearch}/>
 
-                    <select
-                        className="border p-2"
-                        value={statusFilter}
-                        onChange={(e) => setStatusFilter(e.target.value)}
-                    >
-                        <option value="">All Status</option>
-                        <option value="pending">PENDING</option>
-                        <option value="success">SUCCESS</option>
-                        <option value="failed">FAILED</option>
-                    </select>
+                <select
+                    className="border p-2"
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                >
+                    <option value="">All Status</option>
+                    <option value="pending">PENDING</option>
+                    <option value="success">SUCCESS</option>
+                    <option value="failed">FAILED</option>
+                </select>
 
-                    <select
-                        className="border p-2"
-                        value={methodFilter}
-                        onChange={(e) => setMethodFilter(e.target.value)}
-                    >
-                        <option value="">All Methods</option>
-                        <option value="card">CARD</option>
-                        <option value="cod">CASH</option>
-                        <option value="aba">ABA</option>
-                    </select>
-                </div>
-
-                {loading ? (
-                    <p>Loading payments...</p>
-                ) : (
-                    <DataTable columns={columns} data={payments} />
-                )}
+                <select
+                    className="border p-2"
+                    value={methodFilter}
+                    onChange={(e) => setMethodFilter(e.target.value)}
+                >
+                    <option value="">All Methods</option>
+                    <option value="card">CARD</option>
+                    <option value="cod">CASH</option>
+                    <option value="aba">ABA</option>
+                </select>
             </div>
-        </AdminMainLayout>
+
+            {loading ? (
+                <p>Loading payments...</p>
+            ) : (
+                <DataTable columns={columns} data={payments}/>
+            )}
+        </div>
     );
 }

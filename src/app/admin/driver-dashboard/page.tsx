@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 
-import { Button } from "@/components/ui/button";
+import {Button} from "@/components/ui/button";
 import {
     apiDelete,
     apiGet,
@@ -15,8 +15,7 @@ import SearchBar from "@/components/common/admin/SearchBar";
 import AppModal from "@/components/common/admin/Modal";
 import DataTable from "@/components/common/admin/DataTable";
 import RowDropdown from "@/components/common/admin/RowDropdown";
-import { toast } from "sonner";
-import AdminMainLayout from "@/components/layout/AdminMainLayout";
+import {toast} from "sonner";
 
 const client = createBrowserApiClient();
 
@@ -161,7 +160,7 @@ export default function DriverDashboard() {
                 setDrivers((prev) =>
                     prev.map((d) =>
                         d.id === editingId
-                            ? { ...d, ...updated }
+                            ? {...d, ...updated}
                             : d
                     )
                 );
@@ -192,7 +191,7 @@ export default function DriverDashboard() {
     });
 
     const columns = [
-        { key: "id", title: "ID" },
+        {key: "id", title: "ID"},
 
         {
             key: "name",
@@ -240,142 +239,141 @@ export default function DriverDashboard() {
     ];
 
     return (
-        <AdminMainLayout>
-            <div className="p-6 space-y-4">
-                <div className="flex justify-between">
-                    <h1 className="text-2xl font-semibold">
-                        Delivery Drivers
-                    </h1>
+        <div className="p-6 space-y-4">
+            <div className="flex justify-between">
+                <h1 className="text-2xl font-semibold">
+                    Delivery Drivers
+                </h1>
 
-                    <Button
-                        onClick={() => {
-                            setOpen(true);
-                            setEditingId(null);
-                            setForm(emptyForm);
-                        }}
-                    >
-                        + Add Driver
+                <Button
+                    onClick={() => {
+                        setOpen(true);
+                        setEditingId(null);
+                        setForm(emptyForm);
+                    }}
+                >
+                    + Add Driver
+                </Button>
+            </div>
+
+            <SearchBar value={search} onChange={setSearch}/>
+
+            {loading ? (
+                <p>Loading...</p>
+            ) : (
+                <DataTable columns={columns} data={filteredDrivers}/>
+            )}
+
+            {/* MODAL */}
+            <AppModal
+                open={open}
+                onOpenChange={setOpen}
+                title={editingId ? "Edit Driver" : "Create Driver"}
+            >
+                <div className="space-y-3">
+
+                    <input
+                        className="border p-2 w-full"
+                        placeholder="Email"
+                        value={form.email}
+                        onChange={(e) =>
+                            setForm({...form, email: e.target.value})
+                        }
+                    />
+
+                    <input
+                        className="border p-2 w-full"
+                        placeholder="First Name"
+                        value={form.first_name}
+                        onChange={(e) =>
+                            setForm({...form, first_name: e.target.value})
+                        }
+                    />
+
+                    <input
+                        className="border p-2 w-full"
+                        placeholder="Last Name"
+                        value={form.last_name}
+                        onChange={(e) =>
+                            setForm({...form, last_name: e.target.value})
+                        }
+                    />
+
+                    <input
+                        className="border p-2 w-full"
+                        placeholder="Phone"
+                        value={form.phone}
+                        onChange={(e) =>
+                            setForm({...form, phone: e.target.value})
+                        }
+                    />
+
+                    <input
+                        className="border p-2 w-full"
+                        placeholder="Plate Number"
+                        value={form.plate_number}
+                        onChange={(e) =>
+                            setForm({...form, plate_number: e.target.value})
+                        }
+                    />
+
+                    <input
+                        className="border p-2 w-full"
+                        placeholder="Vehicle Type"
+                        value={form.vehicle_type}
+                        onChange={(e) =>
+                            setForm({...form, vehicle_type: e.target.value})
+                        }
+                    />
+
+                    <label className="flex items-center gap-2">
+                        <input
+                            type="checkbox"
+                            checked={form.is_available}
+                            onChange={(e) =>
+                                setForm({
+                                    ...form,
+                                    is_available: e.target.checked,
+                                })
+                            }
+                        />
+                        Available
+                    </label>
+
+                    <Button onClick={handleSubmit}>
+                        {editingId ? "Update" : "Create"}
                     </Button>
                 </div>
+            </AppModal>
 
-                <SearchBar value={search} onChange={setSearch} />
+            {/* DELETE */}
+            <AppModal
+                open={!!deleteId}
+                onOpenChange={() => setDeleteId(null)}
+                title="Delete Driver"
+            >
+                <div className="space-y-4">
+                    <p>Are you sure?</p>
 
-                {loading ? (
-                    <p>Loading...</p>
-                ) : (
-                    <DataTable columns={columns} data={filteredDrivers} />
-                )}
+                    <div className="flex justify-end gap-2">
+                        <Button
+                            variant="outline"
+                            onClick={() => setDeleteId(null)}
+                        >
+                            Cancel
+                        </Button>
 
-                {/* MODAL */}
-                <AppModal
-                    open={open}
-                    onOpenChange={setOpen}
-                    title={editingId ? "Edit Driver" : "Create Driver"}
-                >
-                    <div className="space-y-3">
-
-                        <input
-                            className="border p-2 w-full"
-                            placeholder="Email"
-                            value={form.email}
-                            onChange={(e) =>
-                                setForm({ ...form, email: e.target.value })
-                            }
-                        />
-
-                        <input
-                            className="border p-2 w-full"
-                            placeholder="First Name"
-                            value={form.first_name}
-                            onChange={(e) =>
-                                setForm({ ...form, first_name: e.target.value })
-                            }
-                        />
-
-                        <input
-                            className="border p-2 w-full"
-                            placeholder="Last Name"
-                            value={form.last_name}
-                            onChange={(e) =>
-                                setForm({ ...form, last_name: e.target.value })
-                            }
-                        />
-
-                        <input
-                            className="border p-2 w-full"
-                            placeholder="Phone"
-                            value={form.phone}
-                            onChange={(e) =>
-                                setForm({ ...form, phone: e.target.value })
-                            }
-                        />
-
-                        <input
-                            className="border p-2 w-full"
-                            placeholder="Plate Number"
-                            value={form.plate_number}
-                            onChange={(e) =>
-                                setForm({ ...form, plate_number: e.target.value })
-                            }
-                        />
-
-                        <input
-                            className="border p-2 w-full"
-                            placeholder="Vehicle Type"
-                            value={form.vehicle_type}
-                            onChange={(e) =>
-                                setForm({ ...form, vehicle_type: e.target.value })
-                            }
-                        />
-
-                        <label className="flex items-center gap-2">
-                            <input
-                                type="checkbox"
-                                checked={form.is_available}
-                                onChange={(e) =>
-                                    setForm({
-                                        ...form,
-                                        is_available: e.target.checked,
-                                    })
-                                }
-                            />
-                            Available
-                        </label>
-
-                        <Button onClick={handleSubmit}>
-                            {editingId ? "Update" : "Create"}
+                        <Button
+                            onClick={confirmDelete}
+                            disabled={deleting}
+                            className="bg-red-600 text-white"
+                        >
+                            {deleting ? "Deleting..." : "Delete"}
                         </Button>
                     </div>
-                </AppModal>
+                </div>
+            </AppModal>
+        </div>
 
-                {/* DELETE */}
-                <AppModal
-                    open={!!deleteId}
-                    onOpenChange={() => setDeleteId(null)}
-                    title="Delete Driver"
-                >
-                    <div className="space-y-4">
-                        <p>Are you sure?</p>
-
-                        <div className="flex justify-end gap-2">
-                            <Button
-                                variant="outline"
-                                onClick={() => setDeleteId(null)}
-                            >
-                                Cancel
-                            </Button>
-
-                            <Button
-                                onClick={confirmDelete}
-                                disabled={deleting}
-                                className="bg-red-600 text-white"
-                            >
-                                {deleting ? "Deleting..." : "Delete"}
-                            </Button>
-                        </div>
-                    </div>
-                </AppModal>
-            </div>
-        </AdminMainLayout>
     );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 import {
     apiGet,
     createBrowserApiClient,
@@ -8,7 +8,6 @@ import {
 
 import SearchBar from "@/components/common/admin/SearchBar";
 import DataTable from "@/components/common/admin/DataTable";
-import SellerMainLayout from "@/components/layout/SellerLayout";
 
 const client = createBrowserApiClient();
 
@@ -53,9 +52,9 @@ export default function CategoriesDashboard() {
 
 
     const columns = [
-        { key: "id", title: "ID" },
+        {key: "id", title: "ID"},
 
-        { key: "name", title: "Name" },
+        {key: "name", title: "Name"},
 
         {
             key: "description",
@@ -80,29 +79,27 @@ export default function CategoriesDashboard() {
     ];
 
     return (
-        <SellerMainLayout>
-            <div className="p-6 space-y-4">
+        <div className="p-6 space-y-4">
 
-                <div className="flex justify-between items-center">
-                    <h1 className="text-2xl font-semibold">
-                        Categories
-                    </h1>
+            <div className="flex justify-between items-center">
+                <h1 className="text-2xl font-semibold">
+                    Categories
+                </h1>
 
-                </div>
-
-                {/* SEARCH */}
-                <SearchBar value={search} onChange={setSearch} />
-
-                {/* TABLE */}
-                {loading ? (
-                    <p>Loading categories...</p>
-                ) : (
-                    <DataTable
-                        columns={columns}
-                        data={filtered}
-                    />
-                )}
             </div>
-        </SellerMainLayout>
+
+            {/* SEARCH */}
+            <SearchBar value={search} onChange={setSearch}/>
+
+            {/* TABLE */}
+            {loading ? (
+                <p>Loading categories...</p>
+            ) : (
+                <DataTable
+                    columns={columns}
+                    data={filtered}
+                />
+            )}
+        </div>
     );
 }

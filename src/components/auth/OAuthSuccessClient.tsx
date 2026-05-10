@@ -47,7 +47,7 @@ export default function OAuthSuccessPage() {
 
                 setStatus("success");
 
-                toast.success("Login successful 🎉");
+                toast.success("Login successful ");
 
                 setTimeout(() => {
                     router.replace("/");
