@@ -1,21 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { Send, MapPin, Phone, Mail, Clock } from "lucide-react";
-import { FaFacebook, FaInstagramSquare, FaLinkedin } from "react-icons/fa";
+import {Send, MapPin, Phone, Mail, Clock} from "lucide-react";
+import {FaFacebook, FaInstagramSquare, FaLinkedin} from "react-icons/fa";
 
 const socialLinks = [
-    { icon: FaFacebook, href: "#" },
-    { icon: FaInstagramSquare, href: "#" },
-    { icon: FaLinkedin, href: "#" },
-    { icon: Send, href: "#" },
+    {icon: FaFacebook, href: "#"},
+    {icon: FaInstagramSquare, href: "#"},
+    {icon: FaLinkedin, href: "#"},
+    {icon: Send, href: "#"},
 ];
 
 const contacts = [
-    { icon: MapPin, label: "Phnom Penh, Cambodia" },
-    { icon: Phone, label: "+666 35 369 753" },
-    { icon: Mail, label: "bookstore@gmail.com" },
-    { icon: Clock, label: "08:00 - 17:00" },
+    {icon: MapPin, label: "Phnom Penh, Cambodia"},
+    {icon: Phone, label: "+666 35 369 753"},
+    {icon: Mail, label: "bookstore@gmail.com"},
+    {icon: Clock, label: "08:00 - 17:00"},
 ];
 
 export default function Footer() {
@@ -45,15 +45,16 @@ export default function Footer() {
                                         href={item.href}
                                         className="hover:text-blue-500 transition"
                                     >
-                                        <Icon className="h-5 w-5" />
+                                        <Icon className="h-5 w-5"/>
                                     </Link>
                                 );
                             })}
                         </div>
 
                         {/* Policy */}
-                        <div className="text-sm text-gray-500 dark:text-gray-400 flex flex-col sm:flex-row sm:items-center gap-2">
-                            <Link href="/privacy" className="hover:underline">
+                        <div
+                            className="text-sm text-gray-500 dark:text-gray-400 flex flex-col sm:flex-row sm:items-center gap-2">
+                            <Link href="#" className="hover:underline">
                                 Privacy Policy
                             </Link>
                             <span className="hidden sm:inline">•</span>
@@ -75,7 +76,7 @@ export default function Footer() {
                                         key={index}
                                         className="flex items-center gap-2 md:justify-end"
                                     >
-                                        <Icon className="h-4 w-4" />
+                                        <Icon className="h-4 w-4"/>
                                         <span>{item.label}</span>
                                     </div>
                                 );
